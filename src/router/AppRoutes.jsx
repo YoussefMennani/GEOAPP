@@ -109,7 +109,7 @@ const AppRoutes = () => {
             {/* map */}
             <Route path="/map" element={<Map/>} />
             {/* vehicle */}
-            <Route path="/vehicle/" element={<Vehicle/>} />
+            <Route path="/vehicle/gestion_vehicle" element={<Vehicle/>} />
 
 
         </Routes>

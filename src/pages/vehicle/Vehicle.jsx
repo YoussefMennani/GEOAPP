@@ -83,7 +83,15 @@ const Vehicle = () => {
     [],
   );
 
-  return <MaterialReactTable columns={columns} data={data} />;
+  return (
+    <>
+<h4 className="py-3 mb-4">
+    <span className="text-muted fw-light"> Vehicle /</span>  Gestion Vehicle
+  </h4>
+   <MaterialReactTable columns={columns} data={data} />; 
+    </>
+    
+  ) 
 };
 
 export default Vehicle;

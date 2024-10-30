@@ -24,6 +24,9 @@ const Map = () => {
     <>
       <div class="">
         <div class="row">
+        <div class="col-sm ">
+        <span className="" style={{fontSize: "1.375rem"}}> Map</span> 
+        </div>
           <div class="col-sm ">
             <Button type="primary">
               <i class="bx bx-ruler"></i>

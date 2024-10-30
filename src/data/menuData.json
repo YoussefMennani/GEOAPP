@@ -23,7 +23,7 @@
                     {
                         "text": "Gestion Vehicle",
                         "available": true,
-                        "link": "/vehicle/"
+                        "link": "/vehicle/gestion_vehicle"
                     }
                 ]
             },
