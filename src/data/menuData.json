@@ -9,21 +9,60 @@
                 "link": "/"
             },
             {
-                "text": "map",
+                "text": "Map",
                 "icon": "bx bx-map-alt",
                 "available": true,
                 "link": "/map"
             },
             {
-                "text": "vehicle",
+                "text": "Vehicles",
                 "icon": "bx bx bx-car",
                 "available": true,
-                "link": "/vehicle",
+                "link": "/vehicles",
                 "submenu": [
                     {
-                        "text": "Gestion Vehicle",
+                        "text": "Vehicles Manager",
                         "available": true,
-                        "link": "/vehicle/gestion_vehicle"
+                        "link": "/vehicles/vehicles_manager"
+                    }
+                ]
+            },
+            {
+                "text": "Gps Tracker",
+                "icon": "bx bx bx-broadcast",
+                "available": true,
+                "link": "/gps_tracker",
+                "submenu": [
+                    {
+                        "text": "Tracker Manager",
+                        "available": true,
+                        "link": "/gps_tracker/tracker_manager"
+                    }
+                ]
+            },
+            {
+                "text": "Subscriptions",
+                "icon": "bx bx bx-memory-card",
+                "available": true,
+                "link": "/Subscriptions",
+                "submenu": [
+                    {
+                        "text": "Subscriptions Manager",
+                        "available": true,
+                        "link": "/Subscriptions/subscriptions_manager"
+                    }
+                ]
+            },
+            {
+                "text": "Drivers",
+                "icon": "bx 'bx bx-user-pin",
+                "available": true,
+                "link": "/drivers",
+                "submenu": [
+                    {
+                        "text": "Drivers Manager",
+                        "available": true,
+                        "link": "/drivers/drivers_manager"
                     }
                 ]
             },

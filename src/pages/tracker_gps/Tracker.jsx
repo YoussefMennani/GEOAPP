@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
+import BannerUpTable from '../layouts/BannerUpTable';
+import ModalAddTracker from './modals/ModalAddTracker';
 
 //nested data is ok, see accessorKeys in ColumnDef below
 const data = [
@@ -50,7 +52,7 @@ const data = [
   },
 ];
 
-const Vehicle = () => {
+const Tracker = () => {
   //should be memoized or stable
   const columns = useMemo(
     () => [
@@ -85,13 +87,14 @@ const Vehicle = () => {
 
   return (
     <>
-<h4 className="py-3 mb-4">
-    <span className="text-muted fw-light"> Vehicle /</span>  Gestion Vehicle
-  </h4>
+
+    <BannerUpTable parentPath="Gps Tracker" childPath="Tracker Manager" imageButton="bx bx-broadcast" labelButton="Add Tracker"   data_bs_toggle="modal"  data_bs_target="#modalCenter"/>
+
+    <ModalAddTracker/>
    <MaterialReactTable columns={columns} data={data} />; 
     </>
     
   ) 
 };
 
-export default Vehicle;
+export default Tracker;

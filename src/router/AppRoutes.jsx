@@ -20,7 +20,7 @@ import { AlertPage } from "../pages/user-interface/AlertPage";
 import { BadgesPage } from "../pages/user-interface/BadgePage";
 import { ButtonPage } from "../pages/user-interface/ButtonPage";
 import { CarouselPage } from "../pages/user-interface/CarouselPage";
-import { CardsPage } from   "../pages/user-interface/CardsPage";
+import { CardsPage } from "../pages/user-interface/CardsPage";
 import { CollapsePage } from "../pages/user-interface/CollapsePage";
 import { DropdownPage } from "../pages/user-interface/DropdownPage";
 import { FooterPage } from "../pages/user-interface/FooterPage";
@@ -48,71 +48,95 @@ import { DashboardPage } from "../pages/DashboardPage";
 import { PerfectScrollbarPage } from "../pages/extended-ui/PerfectScrollbar";
 import { TextDividerPage } from "../pages/extended-ui/TextDividerPage";
 import Map from "../pages/map/Map";
-import Vehicle from "../pages/vehicle/vehicle";
+import Tracker from "../pages/tracker_gps/Tracker";
+import Subscriptions from "../pages/subscriptions/Subscriptions";
+import Vehicles from "../pages/vehicles/Vehicles";
+import Drivers from "../pages/drivers/Drivers";
+
 
 const AppRoutes = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            
-            <Route path="/layout/without-menu" element={<WithoutMenuPage />} />
-            <Route path="/layout/without-navbar" element={<WithoutNavbarPage />} />
-            <Route path="/layout/container" element={<ContainerPage />} />
-            <Route path="/layout/fluid" element={<FluidPage />} />
-            <Route path="/layout/fluid" element={<FluidPage />} />
-            <Route path="/layout/blank" element={<BlankPage />} />
+  return (
+    <Routes>
+      <Route path="/" element={<DashboardPage />} />
 
-            <Route path="/ui/accordion" element={<AccordionPage />} />
-            <Route path="/ui/alerts" element={<AlertPage />} />
-            <Route path="/ui/badges" element={<BadgesPage />} />
-            <Route path="/ui/buttons" element={<ButtonPage />} />
-            <Route path="/ui/cards" element={<CardsPage />} />
-            <Route path="/ui/carousel" element={<CarouselPage />} />
-            <Route path="/ui/collapse" element={<CollapsePage />} />
-            <Route path="/ui/dropdown" element={<DropdownPage />} />
-            <Route path="/ui/footer" element={<FooterPage />} />
-            <Route path="/ui/list-group" element={<ListGroupPage />} />
-            <Route path="/ui/modals" element={<ModalPage />} />
-            <Route path="/ui/navbar" element={<NavbarPage />} />
-            <Route path="/ui/offcanvas" element={<OffcanvasPage />} />
-            <Route path="/ui/pagination-breadcrumbs" element={<PaginationBreadcrumbsPage />} />
-            <Route path="/ui/progress" element={<ProgressPage />} />
-            <Route path="/ui/spinners" element={<SpinnersPage />} />
-            <Route path="/ui/tabs-pills" element={<TabsPillPage />} />
-            <Route path="/ui/toasts" element={<ToastPage />} />
-            <Route path="/ui/tooltips-popovers" element={<TooltipPopoverPage />} />
-            <Route path="/ui/typography" element={<TypographyPage />} />
+      <Route path="/layout/without-menu" element={<WithoutMenuPage />} />
+      <Route path="/layout/without-navbar" element={<WithoutNavbarPage />} />
+      <Route path="/layout/container" element={<ContainerPage />} />
+      <Route path="/layout/fluid" element={<FluidPage />} />
+      <Route path="/layout/fluid" element={<FluidPage />} />
+      <Route path="/layout/blank" element={<BlankPage />} />
 
-            <Route path="/auth/login" element={<LoginPage />} />
-            <Route path="/auth/register" element={<RegisterPage />} />
-            <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/ui/accordion" element={<AccordionPage />} />
+      <Route path="/ui/alerts" element={<AlertPage />} />
+      <Route path="/ui/badges" element={<BadgesPage />} />
+      <Route path="/ui/buttons" element={<ButtonPage />} />
+      <Route path="/ui/cards" element={<CardsPage />} />
+      <Route path="/ui/carousel" element={<CarouselPage />} />
+      <Route path="/ui/collapse" element={<CollapsePage />} />
+      <Route path="/ui/dropdown" element={<DropdownPage />} />
+      <Route path="/ui/footer" element={<FooterPage />} />
+      <Route path="/ui/list-group" element={<ListGroupPage />} />
+      <Route path="/ui/modals" element={<ModalPage />} />
+      <Route path="/ui/navbar" element={<NavbarPage />} />
+      <Route path="/ui/offcanvas" element={<OffcanvasPage />} />
+      <Route
+        path="/ui/pagination-breadcrumbs"
+        element={<PaginationBreadcrumbsPage />}
+      />
+      <Route path="/ui/progress" element={<ProgressPage />} />
+      <Route path="/ui/spinners" element={<SpinnersPage />} />
+      <Route path="/ui/tabs-pills" element={<TabsPillPage />} />
+      <Route path="/ui/toasts" element={<ToastPage />} />
+      <Route path="/ui/tooltips-popovers" element={<TooltipPopoverPage />} />
+      <Route path="/ui/typography" element={<TypographyPage />} />
 
-            <Route path="/account/settings" element={<AccountPage />} />
-            <Route path="/account/notifications" element={<NotificationPage />} />
-            <Route path="/account/connections" element={<Connections />} />
+      <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
 
-            <Route path="/misc/error" element={<ErrorPage />} />
-            <Route path="/misc/under-maintenance" element={<MaintenancePage />} />
-            
-            <Route path="/extended-ui/perfect-scrollbar" element={<PerfectScrollbarPage />} />
-            <Route path="/extended-ui/text-divider" element={<TextDividerPage />} />
+      <Route path="/account/settings" element={<AccountPage />} />
+      <Route path="/account/notifications" element={<NotificationPage />} />
+      <Route path="/account/connections" element={<Connections />} />
 
-            <Route path="/boxicons" element={<BoxiconsPage />} />
+      <Route path="/misc/error" element={<ErrorPage />} />
+      <Route path="/misc/under-maintenance" element={<MaintenancePage />} />
 
-            <Route path="/form/basic-inputs" element={<BasicInputPage />} />
-            <Route path="/form/input-groups" element={<InputGroupPage />} />
-            
-            <Route path="/form-layout/horizontal-form" element={<HorizontalFormPage />} />
-            <Route path="/form-layout/vertical-form" element={<VerticalFormPage />} />
+      <Route
+        path="/extended-ui/perfect-scrollbar"
+        element={<PerfectScrollbarPage />}
+      />
+      <Route path="/extended-ui/text-divider" element={<TextDividerPage />} />
 
-            <Route path="/tables" element={<TablesPage />} />
-            {/* map */}
-            <Route path="/map" element={<Map/>} />
-            {/* vehicle */}
-            <Route path="/vehicle/gestion_vehicle" element={<Vehicle/>} />
+      <Route path="/boxicons" element={<BoxiconsPage />} />
 
+      <Route path="/form/basic-inputs" element={<BasicInputPage />} />
+      <Route path="/form/input-groups" element={<InputGroupPage />} />
 
-        </Routes>
-    )
-}
+      <Route
+        path="/form-layout/horizontal-form"
+        element={<HorizontalFormPage />}
+      />
+      <Route path="/form-layout/vertical-form" element={<VerticalFormPage />} />
+
+      <Route path="/tables" element={<TablesPage />} />
+      
+      {/* map */}
+      <Route path="/map" element={<Map />} />
+
+      {/* vehicle */}
+      <Route path="/vehicles/vehicles_manager" element={<Vehicles />} />
+
+      {/* Gps Tracker */}
+      <Route path="/gps_tracker/tracker_manager" element={<Tracker />} />
+
+      {/* Gps Tracker */}
+      <Route path="/subscriptions/subscriptions_manager" element={<Subscriptions />} />
+
+      {/* Gps Tracker */}
+      <Route path="/drivers/drivers_manager" element={<Drivers />} />
+
+    </Routes>
+
+  );
+};
 export default AppRoutes;
