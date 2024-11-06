@@ -37,6 +37,16 @@
                         "text": "Tracker Manager",
                         "available": true,
                         "link": "/gps_tracker/tracker_manager"
+                    },
+                    {
+                        "text": "Brand Tracker",
+                        "available": true,
+                        "link": "/gps_tracker/brand"
+                    },
+                       {
+                        "text": "Model Tracker",
+                        "available": true,
+                        "link": "/gps_tracker/model"
                     }
                 ]
             },

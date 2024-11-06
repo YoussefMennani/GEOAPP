@@ -52,6 +52,8 @@ import Tracker from "../pages/tracker_gps/Tracker";
 import Subscriptions from "../pages/subscriptions/Subscriptions";
 import Vehicles from "../pages/vehicles/Vehicles";
 import Drivers from "../pages/drivers/Drivers";
+import Brand from "../pages/tracker_gps/Brand";
+import Model from "../pages/tracker_gps/Model";
 
 
 const AppRoutes = () => {
@@ -128,11 +130,13 @@ const AppRoutes = () => {
 
       {/* Gps Tracker */}
       <Route path="/gps_tracker/tracker_manager" element={<Tracker />} />
+      <Route path="/gps_tracker/brand" element={<Brand />} />
+      <Route path="/gps_tracker/model" element={<Model />} />
 
-      {/* Gps Tracker */}
+      {/* Subscription */}
       <Route path="/subscriptions/subscriptions_manager" element={<Subscriptions />} />
 
-      {/* Gps Tracker */}
+      {/* Driver */}
       <Route path="/drivers/drivers_manager" element={<Drivers />} />
 
     </Routes>

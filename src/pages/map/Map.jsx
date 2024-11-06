@@ -5,6 +5,15 @@ import PopupMarker from "./PopupMarker";
 import { Icon } from "leaflet";
 import MarkerExporter from "./MarkerExporter";
 
+
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import Box from '@mui/material/Box';
+import Divider, { dividerClasses } from '@mui/material/Divider';
+import { Card } from "@mui/material";
+
 const ComponentResize = () => {
   const map = useMap();
 
@@ -24,11 +33,13 @@ const Map = () => {
     <>
       <div class="">
         <div class="row">
-        <div class="col-sm ">
-        <span className="" style={{fontSize: "1.375rem"}}> Map</span> 
-        </div>
           <div class="col-sm ">
-            <Button type="primary">
+            <span className="" style={{ fontSize: "1.375rem" }}> Map</span>
+          </div>
+
+
+          <div className="col-sm text">
+            {/* <Button type="primary">
               <i class="bx bx-ruler"></i>
             </Button>
             <Button type="primary">
@@ -36,10 +47,38 @@ const Map = () => {
             </Button>
             <Button type="primary">
               <span className="tf-icons bx bx-map-pin"></span>
-            </Button>
+            </Button> */}
+
+            <Card
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                color: 'text.secondary',
+                '& svg': {
+                  m: 1,
+                },
+                [`& .${dividerClasses.root}`]: {
+                  mx: 0.5,
+                },
+              }}
+            >
+              <FormatAlignLeftIcon onClick={() => console.log("hello")} />
+              <Divider orientation="vertical" variant="middle" flexItem />
+
+              <FormatAlignCenterIcon />
+              <Divider orientation="vertical" variant="middle" flexItem />
+
+              <FormatAlignRightIcon />
+              <Divider orientation="vertical" variant="middle" flexItem />
+              <FormatBoldIcon />
+            </Card>
+
           </div>
+
+
+
           {/* <div class="col-sm">One of three columns</div> */}
-          <div class="col-sm">
+          <div className="col-sm">
             <div className="mb-3">
               <input
                 className="form-control"
@@ -82,14 +121,14 @@ const Map = () => {
        
         </Marker> */}
 
-        
+
         <Marker position={position} icon={MarkerExporter("car")} >
-          
-          <PopupMarker/>
-     
-      </Marker>
-      
-        
+
+          <PopupMarker />
+
+        </Marker>
+
+
       </MapContainer>
     </>
   );
