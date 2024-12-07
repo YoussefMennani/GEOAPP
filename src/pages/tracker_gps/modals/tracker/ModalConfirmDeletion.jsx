@@ -3,7 +3,7 @@ import React from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { closeModalDeleteBrand, deleteBrandSlice } from '../../../../slices/brandSlice';
+import { closeModalDeleteBrand, closeModalDeleteModel, closeModalDeleteTracker, deleteBrandSlice, deleteModelSlice, deleteTrackerSlice } from '../../../../slices/brandSlice';
 
 const style = {
     position: 'absolute',
@@ -19,20 +19,20 @@ const style = {
     borderRadius: '5px'
 };
 
-const ModalConfirmDeletion = ({ brand }) => {
+const ModalConfirmDeletion = ({ entity }) => {
 
     const dispatch = useDispatch();
 
-    const { isOpenDeleteModal } = useSelector((state) => state.trackers.brand);
+    const { isOpenDeleteModal } = useSelector((state) => state.trackers);
     
     const handleCloseDeleteModal = ()=>{
-        dispatch(closeModalDeleteBrand())
+        dispatch(closeModalDeleteTracker())
     }
     
     const onClickDelete = () =>{
-        dispatch(deleteBrandSlice(brand.brandId))
+        dispatch(deleteTrackerSlice(entity.id))
     }
-    console.log(brand)
+    console.log(entity)
     return (
 
         <Modal
@@ -50,7 +50,7 @@ const ModalConfirmDeletion = ({ brand }) => {
 
                 <DialogContent >
                     <Typography id="dialog-description">
-                        Are you sure you want to delete the brand <strong>{brand.brandName}</strong>?
+                        Are you sure you want to delete the Tracker with <strong> IMEI : {entity.imei}</strong>?
                     </Typography>
                 </DialogContent>
 

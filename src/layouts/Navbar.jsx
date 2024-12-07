@@ -1,5 +1,28 @@
+import { useDispatch, useSelector } from 'react-redux';
+import { updateDarkModeChecking, updatePathCorrectionChecking, updateReelTimeTrackingChecking } from '../slices/mapSlice';
 import getGreetingMessage from '../utils/greetingHandler';
+import Notification from './Notification';
 const Navbar = () => {
+  const dispatch = useDispatch();
+
+  const { mapSettings } = useSelector((state) => state.map)
+  const handleChangeInput = (e) => {
+    const { name, value } = e.target;
+    if (name == "reelTimeTracking") {
+      console.log(e.target.checked)
+      dispatch(updateReelTimeTrackingChecking(e.target.checked))
+    }
+
+    if (name == "path_correction_feature") {
+      console.log(e.target.checked)
+      dispatch(updatePathCorrectionChecking(e.target.checked))
+    }
+
+
+  }
+
+
+
   return (
     <nav
       className="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
@@ -11,12 +34,55 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-        {getGreetingMessage('Dwi')}
+        {/* {getGreetingMessage('Dwi')} */}
+        {/* button settings */}
+
+        <div className="btn-group">
+          <button aria-label='Click me'
+            type="button"
+            className="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class='bx bx-cog'></i>
+          </button>
+
+          <ul className="dropdown-menu dropdown-menu-end "
+            style={{
+              position: "fixed",
+              left: 0,
+              width: '300px'
+            }}>
+
+            <li className="form-check form-switch  dropdown-item">
+              <input className="form-check-input ms-0" type="checkbox" name="reelTimeTracking" id="flexSwitchCheckDefault" onChange={handleChangeInput} checked={mapSettings.reelTimeTracking} />
+              <label className="form-check-label mx-3" htmlFor="flexSwitchCheckDefault">Enable Real-Time Tracking</label>
+            </li>
+
+            <li className="form-check form-switch  dropdown-item">
+              <input className="form-check-input ms-0" type="checkbox" name="path_correction_feature" id="flexSwitchCheckDefault" onChange={handleChangeInput} checked={mapSettings.pathCorrection} />
+              <label className="form-check-label mx-3" htmlFor="flexSwitchCheckDefault">Path Correction Feature</label>
+            </li>
+
+            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Another action</a></li>
+            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Something else here</a></li>
+            <li>
+              <hr className="dropdown-divider" />
+            </li>
+            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Separated link</a></li>
+          </ul>
+        </div>
+
+
+
+
         <ul className="navbar-nav flex-row align-items-center ms-auto">
+
+          <Notification />
+
           <li className="nav-item navbar-dropdown dropdown-user dropdown">
             <a aria-label='dropdown profile avatar' className="nav-link dropdown-toggle hide-arrow" href="#" data-bs-toggle="dropdown">
               <div className="avatar avatar-online">
-                <img src="../assets/img/avatars/1.png" className="w-px-40 h-auto rounded-circle" alt="avatar-image" aria-label='Avatar Image'/>
+                <img src="../assets/img/avatars/1.png" className="w-px-40 h-auto rounded-circle" alt="avatar-image" aria-label='Avatar Image' />
               </div>
             </a>
             <ul className="dropdown-menu dropdown-menu-end">
@@ -70,9 +136,15 @@ const Navbar = () => {
               </li>
             </ul>
           </li>
+
+
+
+
         </ul>
+
+
       </div>
-    </nav>
+    </nav >
   );
 }
 export default Navbar;

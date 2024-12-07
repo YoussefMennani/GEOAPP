@@ -1,0 +1,10 @@
+.hover-gray {
+    transition: background-color 0.3s ease;
+    border-radius: 2px;
+  }
+  
+  .hover-gray:hover {
+    background-color: #f5f1f1;
+  }
+
+  

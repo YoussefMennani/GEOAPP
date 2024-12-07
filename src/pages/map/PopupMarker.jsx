@@ -3,7 +3,7 @@ import Badge from "../../components/atoms/Badges";
 import Button from "../../components/atoms/Buttons";
 import { Popup } from "react-leaflet";
 
-const PopupMarker = () => {
+const PopupMarker = ({imei}) => {
   return (
     <Popup maxWidth="auto" maxHeight="auto">
       <div className="popup-content">
@@ -13,7 +13,7 @@ const PopupMarker = () => {
 
         <div className="text-left px-2">
           <p className="">
-            <b>Marque :</b> 14587-A-87
+            <b>imei :</b> {imei}
           </p>
           <p className="">
             <b>Marque :</b> 14587-A-87

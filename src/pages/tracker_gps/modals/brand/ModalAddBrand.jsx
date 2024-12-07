@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, DialogActions, DialogContent, DialogTitle, IconButton, Modal, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { addTrackerSlice, closeModalEditBrand } from "../../../../slices/trackerSlice";
+import { addBrandSlice, closeModalEditBrand, updateBrandSlice } from "../../../../slices/brandSlice";
 
 
 const style = {
@@ -26,14 +26,23 @@ const ModalAddBrand = ({ setBrandState, brandState, isEdit }) => {
   
   const dispatch = useDispatch();
   const { isOpenEditModal } = useSelector((state) => state.trackers.brand);
-
+  const [isTouched, setisTouched] = useState(false)
 
   const [errorsList, setErrorsList] = useState({
     originCountry: "",
     brandName: ""
   });
+  
+  useEffect(() => {
+    if (!isOpenEditModal) {
+      setisTouched(false);
+    }
+  }, [isOpenEditModal]);
 
   const onChangeFormBrand = (event) => {
+
+    if(isTouched == false)
+      setisTouched(true)  
     const { name, value } = event.target;
 
     // Update the brand state
@@ -72,10 +81,11 @@ const ModalAddBrand = ({ setBrandState, brandState, isEdit }) => {
 
   const onClickSubmitBrand = () => {
     console.log("----------- onClickSubmitBrand -------------");
+  
     if (validateForm()) {
       //toast.success("Form submitted successfully!");
       // Here you can add the logic to submit the data
-      dispatch(addTrackerSlice())
+      dispatch(addBrandSlice(brandState))
     
     } else {
       toast.error("Please fix the errors in the form.");
@@ -84,9 +94,17 @@ const ModalAddBrand = ({ setBrandState, brandState, isEdit }) => {
 
   const onClickUpdateBrand = () => {
     console.log("----------- onClickUpdateBrand -------------");
+    if(!isTouched){
+      toast.info("Nothing was updated as no changes were detected.");
+      return;
+    }
+
+
     if (validateForm()) {
-      toast.success("Form updated successfully!");
+      //toast.success("Form updated successfully!");
       // Here you can add the logic to update the data
+      dispatch(updateBrandSlice(brandState))
+
     } else {
       toast.error("Please fix the errors in the form.");
     }
@@ -102,8 +120,10 @@ const ModalAddBrand = ({ setBrandState, brandState, isEdit }) => {
 
   }
 
-
+    // Reset isTouched on modal close
+ 
   const handleCloseEditModal = ()=>{
+    
     dispatch(closeModalEditBrand())
   }
   return (

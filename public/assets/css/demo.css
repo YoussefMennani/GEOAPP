@@ -8,6 +8,15 @@
   margin-top: 12px;
 }
 
+/* Hover effect for the bx-cog icon */
+button .bx-cog {
+  transition: transform 0.3s ease-in-out; /* Smooth rotation */
+}
+button:hover .bx-cog {
+  transform: rotate(50deg); /* Rotate 25 degrees */
+  transition: transform 0.3s ease-in-out; /* Smooth rotation */
+}
+
 .app-brand-logo.demo svg {
   width: 22px;
   height: 38px;

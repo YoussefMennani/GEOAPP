@@ -3,7 +3,8 @@ import React from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { closeModalDeleteBrand, deleteBrandSlice } from '../../../../slices/brandSlice';
+import { closeModalDeleteBrand, closeModalDeleteModel, closeModalDeleteTracker, deleteBrandSlice, deleteModelSlice, deleteTrackerSlice } from '../../../slices/brandSlice';
+import { closeModalDeleteVehicle, deleteVehicleSlice } from '../../../slices/vehicleSlice';
 
 const style = {
     position: 'absolute',
@@ -19,20 +20,20 @@ const style = {
     borderRadius: '5px'
 };
 
-const ModalConfirmDeletion = ({ brand }) => {
+const ModalConfirmDeletion = ({ entity }) => {
 
     const dispatch = useDispatch();
 
-    const { isOpenDeleteModal } = useSelector((state) => state.trackers.brand);
+    const { isOpenDeleteModal } = useSelector((state) => state.vehicles);
     
     const handleCloseDeleteModal = ()=>{
-        dispatch(closeModalDeleteBrand())
+        dispatch(closeModalDeleteVehicle())
     }
     
     const onClickDelete = () =>{
-        dispatch(deleteBrandSlice(brand.brandId))
+        dispatch(deleteVehicleSlice(entity.id))
     }
-    console.log(brand)
+    console.log(entity)
     return (
 
         <Modal
@@ -50,7 +51,7 @@ const ModalConfirmDeletion = ({ brand }) => {
 
                 <DialogContent >
                     <Typography id="dialog-description">
-                        Are you sure you want to delete the brand <strong>{brand.brandName}</strong>?
+                        Are you sure you want to delete the vehicle with license plate <strong> {entity.licensePlate}</strong>?
                     </Typography>
                 </DialogContent>
 

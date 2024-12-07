@@ -4,18 +4,7 @@ import BannerUpTable from '../layouts/BannerUpTable';
 import ModalAddBrand from './modals/brand/ModalAddBrand';
 import ModalConfirmDeletion from './modals/brand/ModalConfirmDeletion';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllTrackers, openModalDeleteBrand, openModalEditBrand } from '../../slices/trackerSlice';
-
-
-const data = [
-    {
-        _id: 1,
-        origin_country: '261 Erdman Ford',
-        brand_name: 'East Daphne',
-    },
-
-];
-
+import {  getAllBrandsSlice, openModalDeleteBrand, openModalEditBrand } from '../../slices/brandSlice';
 
 
 const Brand = () => {
@@ -33,16 +22,15 @@ const Brand = () => {
 
 
     useEffect(() => {
-        console.log(" use Effecte ",status)
         if (status === 'idle') {
-          dispatch(getAllTrackers());
-          console.log(listBrand)
+          dispatch(getAllBrandsSlice());
         }
       }, [status, dispatch]);
 
       
 
     const onClickDeleteBrand = (brandIdTarget, brandNameTarget, originCountryTarget) => {
+        console.log(brandIdTarget)
         setBrandState({
             brandId: brandIdTarget,
             brandName: brandNameTarget,
@@ -54,14 +42,15 @@ const Brand = () => {
 
     const onClickUpdateBrand = (brandIdTarget, brandNameTarget, originCountryTarget) => {
 
-        setIsEdit(true)
-        dispatch(openModalEditBrand())
-        console.log(`Update row ${brandIdTarget}`);
+        
         setBrandState({
             brandId: brandIdTarget,
             brandName: brandNameTarget,
             originCountry: originCountryTarget
         })
+        setIsEdit(true)
+        dispatch(openModalEditBrand())
+        console.log(`Update row ${brandIdTarget}`);
     };
 
 
@@ -77,12 +66,12 @@ const Brand = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'brand_name',
+                accessorKey: 'brandName',
                 header: 'Brand Name',
                 size: 150,
             },
             {
-                accessorKey: 'origin_country',
+                accessorKey: 'originCountry',
                 header: 'Origin Country',
                 size: 150,
             },
@@ -102,7 +91,7 @@ const Brand = () => {
                             data-bs-target="#modalCenter"
                             onClick={() => {
                                 console.log("updating brand ....")
-                                onClickUpdateBrand(row.original._id, row.original.brand_name, row.original.origin_country);
+                                onClickUpdateBrand(row.original.id, row.original.brandName, row.original.originCountry);
                             }}
                         >
                             <span className="tf-icons bx bxs-pencil"></span>
@@ -113,7 +102,7 @@ const Brand = () => {
                             className="btn btn-danger btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#modalToggle"
-                            onClick={() => onClickDeleteBrand(row.original._id, row.original.brand_name, row.original.origin_country)}
+                            onClick={() => onClickDeleteBrand(row.original.id, row.original.brandName, row.original.originCountry)}
                         >
                             <span className="tf-icons bx bx-trash"></span>
                         </button>
@@ -125,7 +114,7 @@ const Brand = () => {
                 ),
             },
         ],
-        [listBrand]
+        []
     );
 
 
