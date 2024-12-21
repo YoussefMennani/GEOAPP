@@ -1,4 +1,8 @@
-[
+{
+    
+    "username": "youssef@mail.com",
+    "avatar": "/avtar/from/mongodb.png",
+    "menu":[
     {
         "header": "",
         "items": [
@@ -80,4 +84,4 @@
          
         ]
     }
-]
+]}

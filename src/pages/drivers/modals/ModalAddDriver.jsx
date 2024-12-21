@@ -17,6 +17,8 @@ import {
 } from "../../../slices/vehicleSlice";
 import { addDriverSlice, closeModalEditDriver } from "../../../slices/driverSlice";
 import DeleteIcon from '@mui/icons-material/Delete';
+import organizations from "../../vehicles/data/org";
+import keycloak from "../../../keycloak/keycloak";
 
 const style = {
   position: "absolute",
@@ -35,6 +37,7 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
   const { isOpenEditModal } = useSelector((state) => state.drivers);
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);  // Store the preview URL
 
   // Handle generic field changes
   const handleChange = (event) => {
@@ -51,16 +54,32 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
       [name]: "",
     }));
   };
-  
-  const onChangeInputFile = (event) =>{
+
+
+  // const handleImageChange = (event) => {
+  //   const file = event.target.files[0]; // Get the selected file
+  //   if (file) {
+  //     setSelectedImage(file); // Store the file
+  //     setImagePreview(URL.createObjectURL(file)); // Generate a preview URL
+  //   }
+  // };
+
+
+  const onChangeInputFile = (event) => {
     const { name } = event.target;
+
+    const file = event.target.files[0]; // Get the selected file
+    if (file) {
+      setImagePreview(URL.createObjectURL(file)); // Generate a preview URL
+    }
+
     setEntityState((prevState) => ({
       ...prevState,
       [name]: event.target.files[0],
     }));
-  } 
+  }
 
-  
+
   // Handle language selection
   const handleChangeSelectLang = (event) => {
     const { value } = event.target;
@@ -264,7 +283,8 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
           {currentPage === 1 && <div className="card-body">
             <div className="d-flex align-items-start align-items-sm-center gap-4">
               <img
-                src="../assets/img/avatars/1.png"
+                src={imagePreview ? imagePreview : "../assets/img/avatars/1.png"}
+                // "../assets/img/avatars/1.png"
                 alt="user-avatar"
                 className="d-block rounded"
                 height="100"
@@ -490,6 +510,16 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
               >
                 <option value="">Select Organization</option>
                 <option value="particular">Particular</option>
+                {
+
+                  organizations.map(org => {
+                    if (keycloak.tokenParsed.realm_access.roles.includes("ADMIN") || org.name == keycloak.tokenParsed.organization) {
+                      return (<option key={org.id} value={org.name}>
+                        {org.name}
+                      </option>)
+                    }
+                  })
+                }
                 {/* <option value="">Sale</option> */}
               </select>
 
@@ -499,20 +529,20 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
             </div>
 
             <div className="mb-3 col-md-6">
-              <label htmlFor="language" className="form-label">Required Documents</label><br/>
+              <label htmlFor="language" className="form-label">Required Documents</label><br />
               {/* <input type="file" className="form-control" id="documentUrl" name="documentUrl"  onChange={onChangeInputFile}  /> */}
               <label htmlFor="documentUrl" className="btn btn-primary me-2 mb-4" tabIndex="0">
-                  <span className="d-none d-sm-block">Upload file</span>
-                  <i className="bx bx-upload d-block d-sm-none"></i>
-                  <input
-                    type="file"
-                    id="documentUrl"
-                    name="documentUrl"
-                    className="account-file-input"
-                    hidden
-                    onChange={onChangeInputFile}
-                  />
-                </label>
+                <span className="d-none d-sm-block">Upload file</span>
+                <i className="bx bx-upload d-block d-sm-none"></i>
+                <input
+                  type="file"
+                  id="documentUrl"
+                  name="documentUrl"
+                  className="account-file-input"
+                  hidden
+                  onChange={onChangeInputFile}
+                />
+              </label>
             </div>
 
             <div className="mb-3 col-md-12" style={{ backgroundColor: "#eaf1e7", borderRadius: "5px", padding: "15px" }}>

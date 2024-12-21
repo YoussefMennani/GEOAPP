@@ -1,11 +1,15 @@
+import { useKeycloak } from '@react-keycloak/web';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateDarkModeChecking, updatePathCorrectionChecking, updateReelTimeTrackingChecking } from '../slices/mapSlice';
 import getGreetingMessage from '../utils/greetingHandler';
 import Notification from './Notification';
 const Navbar = () => {
   const dispatch = useDispatch();
+  const { keycloak } = useKeycloak();
+  const {userState} = useSelector((state)=>state.user)
 
   const { mapSettings } = useSelector((state) => state.map)
+
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     if (name == "reelTimeTracking") {
@@ -21,7 +25,9 @@ const Navbar = () => {
 
   }
 
-
+  const handleLogout = () => {
+    keycloak.logout(); // Déconnecter l'utilisateur
+  };
 
   return (
     <nav
@@ -82,7 +88,7 @@ const Navbar = () => {
           <li className="nav-item navbar-dropdown dropdown-user dropdown">
             <a aria-label='dropdown profile avatar' className="nav-link dropdown-toggle hide-arrow" href="#" data-bs-toggle="dropdown">
               <div className="avatar avatar-online">
-                <img src="../assets/img/avatars/1.png" className="w-px-40 h-auto rounded-circle" alt="avatar-image" aria-label='Avatar Image' />
+                <img src="../../assets/img/avatars/1.png" className="w-px-40 h-auto rounded-circle" alt="avatar-image" aria-label='Avatar Image' />
               </div>
             </a>
             <ul className="dropdown-menu dropdown-menu-end">
@@ -95,8 +101,8 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="flex-grow-1">
-                      <span className="fw-medium d-block">John Doe</span>
-                      <small className="text-muted">Admin</small>
+                      <span className="fw-medium d-block">{userState?.email ? userState.email : "UNKNOWN" }</span>
+                      <small className="text-muted">Admin [{userState?.organization ? userState.organization : "UNKNOWN" }]</small>
                     </div>
                   </div>
                 </a>
@@ -129,10 +135,10 @@ const Navbar = () => {
                 <div className="dropdown-divider"></div>
               </li>
               <li>
-                <a aria-label='click to log out' className="dropdown-item" href="#">
+                <span aria-label='click to log out' className="dropdown-item" onClick={handleLogout}>
                   <i className="bx bx-power-off me-2"></i>
                   <span className="align-middle">Log Out</span>
-                </a>
+                </span>
               </li>
             </ul>
           </li>

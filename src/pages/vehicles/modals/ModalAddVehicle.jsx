@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { addBrandSlice, addModelSlice, addTrackerSlice, closeModalEditBrand, closeModalEditModel, closeModalEditTracker, updateBrandSlice, updateModelSlice, updateTrackerSlice } from "../../../slices/brandSlice";
+import { addBrandSlice, addModelSlice, addTrackerSlice, closeModalEditBrand, closeModalEditModel, closeModalEditTracker, getAllTrackersSlice, updateBrandSlice, updateModelSlice, updateTrackerAssociation, updateTrackerSlice } from "../../../slices/brandSlice";
 
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
@@ -13,6 +13,8 @@ import Badge from "../../../components/atoms/Badges";
 import { addVehicleSlice, closeModalEditVehicle, updateVehicleSlice } from "../../../slices/vehicleSlice";
 import brands from "../data/brands";
 import models from "../data/models";
+import organizations from "../data/org";
+import keycloak from "../../../keycloak/keycloak";
 
 const style = {
   position: 'absolute',
@@ -66,7 +68,8 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
     status: "",
     // currentDriver: "",
     // lastPosition: "",
-    tracker: ""
+    tracker: "",
+    organization: ""
   });
 
 
@@ -119,7 +122,8 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       color: "",
       fuelType: "",
       status: "",
-      tracker: ""
+      tracker: "",
+      organization: ""
     };
 
     // License Plate
@@ -181,6 +185,11 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       errors.tracker = "Tracker information is required";
       isValid = false;
     }
+    // Organization
+    if (!entityState.organization) {
+      errors.organization = "Organization is required";
+      isValid = false;
+    }
 
     setErrorsList(errors); // Update errors state
     return isValid;
@@ -201,6 +210,19 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
         }
       }
       ))
+
+      const newTrackersList = listTrackers.map((tracker)=>{
+        console.log(" ++++++++++++ test +++++++++++++++")
+        console.log(fullTrackerData.id)
+        console.log(tracker)
+        if( fullTrackerData.id === tracker.id){
+          return  {...tracker, vehicleAssociated: true}
+        }
+         return tracker; 
+        
+      })
+
+      dispatch(updateTrackerAssociation(newTrackersList))
     } else {
       toast.error("Please fix the errors in the form.");
       console.log(errorsList)
@@ -220,6 +242,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       // Here you can add the logic to update the data
       const fullTrackerData = listTrackers.filter((tracker) => tracker.id == entityState.tracker)[0]
       console.log("...........fullTrackerData", fullTrackerData)
+      console.log("on change input img ",entityState)
 
       dispatch(updateVehicleSlice({
         ...entityState,
@@ -246,6 +269,21 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
 
 
 
+
+  const onChangeInputFile = (event) => {
+    const { name } = event.target;
+    setisTouched(true)
+    // const file = event.target.files[0]; // Get the selected file
+    // if (file) {
+    //     setImagePreview(URL.createObjectURL(file)); // Generate a preview URL
+    // }
+
+    setEntityState((prevState) => ({
+      ...prevState,
+      [name]: event.target.files[0],
+    }));
+
+  }
 
 
 
@@ -291,12 +329,9 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
               <select value={entityState.tracker} className={`form-control ${errorsList.tracker ? "is-invalid" : ""}`} onChange={onChangeFormBrand} name="tracker" id="tracker" defaultValue="" >
                 <option value="">Select Tracker</option>
                 {listTrackers.map(tracker => {
-                  const val = {
-                    id: tracker.id,
-                    imei: tracker.imei
-                  }
+                  
                   return (
-                    <option key={tracker.id} value={tracker.id}>
+                    !tracker.vehicleAssociated && <option key={tracker.id} value={tracker.id}>
                       {tracker.imei}
                     </option>)
 
@@ -341,6 +376,8 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
           </div> */}
 
           <div className="row ">
+
+
             <div className="mb-3 col-sm">
               <label htmlFor="brand" className="form-label">Brand Vehicle</label>
               <select
@@ -442,8 +479,62 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
                 <div className="invalid-feedback">{errorsList.status}</div>
               )}
             </div>
-          </div>
 
+
+          </div>
+          <div className="row">
+
+            <div className="mb-3 col-sm-6">
+              <label htmlFor="status" className="form-label">Organization</label>
+              <select
+                // value={entityState.brandVehicle} 
+                className={`form-control ${errorsList.organization ? "is-invalid" : ""}`}
+                // onChange={onChangeFormBrand} 
+                onChange={onChangeFormBrand} value={entityState.organization}
+                name="organization" id="organization" >
+                <option value="">Select Organization</option>
+
+                {
+
+                  organizations.map(org => {
+                    if (keycloak.tokenParsed.realm_access.roles.includes("ADMIN") || org.name == keycloak.tokenParsed.organization) {
+                      return (<option key={org.id} value={org.name}>
+                        {org.name}
+                      </option>)
+                    }
+                  })
+                }
+              </select>
+              {errorsList.organization && (
+                <div className="invalid-feedback">{errorsList.organization}</div>
+              )}
+            </div>
+
+            <div className="mb-3 col-sm-6">
+            <label htmlFor="status" className="form-label">Photo</label>
+
+              <div className="button-wrapper">
+                <label htmlFor="imgPath" className="btn btn-primary me-2 mb-4" tabIndex="0">
+                  <span className="d-none d-sm-block">Upload new photo</span>
+                  <i className="bx bx-upload d-block d-sm-none"></i>
+                  <input
+                    type="file"
+                    id="imgPath"
+                    name="imgPath"
+                    className="account-file-input"
+                    hidden
+                    accept="image/png, image/jpeg"
+                    onChange={onChangeInputFile}
+                  />
+                </label>
+                <button aria-label='Click me' type="button" className="btn btn-outline-secondary account-image-reset mb-4">
+                  <i className="bx bx-reset d-block d-sm-none"></i>
+                  <span className="d-none d-sm-block">Reset</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
           <div className="row g-2">
 
           </div>

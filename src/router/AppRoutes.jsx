@@ -55,6 +55,7 @@ import Drivers from "../pages/drivers/Drivers";
 import Brand from "../pages/tracker_gps/Brand";
 import Model from "../pages/tracker_gps/Model";
 import MapHistory from "../pages/map-history/MapHistory";
+import PrivateRoute from "./PrivateRoute";
 
 
 const AppRoutes = () => {
@@ -128,6 +129,7 @@ const AppRoutes = () => {
       <Route path="/map/history/:vehicleLicensePlate" element={<MapHistory />} />
 
       {/* vehicle */}
+      {/* <PrivateRoute><Vehicles /></PrivateRoute> */}
       <Route path="/vehicles/vehicles_manager" element={<Vehicles />} />
 
       {/* Gps Tracker */}

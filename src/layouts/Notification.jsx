@@ -19,6 +19,7 @@ const Notification = () => {
   const dispatch = useDispatch();
 
   const { notificationList, unreadNotification, isDropdownMenuVisibe } = useSelector((state) => state.notification)
+  const { preferred_username } = useSelector((state) => state.user.userState)
 
   useEffect(() => {
     // Set up the STOMP client with SockJS
@@ -26,7 +27,8 @@ const Notification = () => {
       webSocketFactory: () => new sockjs('http://localhost:8096/ws'),
       debug: (str) => { console.log(str); },
       onConnect: () => {
-        client.subscribe('/user/john_doe/notifications', (message) => {
+        console.log("Notification request sent for URL : ['/user/"+preferred_username+"/notifications']")
+        client.subscribe('/user/'+preferred_username+'/notifications', (message) => {
           const notification = JSON.parse(message.body);
           console.log(notification);
           dispatch(handleAddNotificationList(notification))

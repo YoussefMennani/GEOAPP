@@ -4,6 +4,7 @@ import vehicleReducer from '../slices/vehicleSlice';
 import mapReducer from '../slices/mapSlice';
 import notificationReducer from '../slices/notificationSlice';
 import driverReducer from '../slices/driverSlice';
+import userReducer from '../slices/userSlice';
 
 
 const store = configureStore({
@@ -12,7 +13,8 @@ const store = configureStore({
     vehicles: vehicleReducer,
     map: mapReducer,
     notification:notificationReducer,
-    drivers:driverReducer
+    drivers:driverReducer,
+    user:userReducer
   },
 });
 

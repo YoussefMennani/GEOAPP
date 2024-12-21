@@ -10,6 +10,7 @@ const models = [
     { id: 8, idBrand: 4,nameBrand: 'BMW', nameModel: 'M3' },
     { id: 9, idBrand: 5, nameBrand: 'Tesla', nameModel: 'Model S' },
     { id: 10, idBrand: 5, nameBrand: 'Tesla', nameModel: 'Model X' },
+    { id: 11, idBrand: 6, nameBrand: 'Fiat', nameModel: 'Punto' },
 ];
 
 export default models;

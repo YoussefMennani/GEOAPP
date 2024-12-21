@@ -4,15 +4,22 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Status } from '../assets/enums/enums';
 
-const apiUrl = "http://localhost:8090";
+// const apiUrl = "http://localhost:8090";
+const apiUrl = "http://localhost:8222";
 
-export const getAllBrandsSlice = createAsyncThunk('trackers/getAllBrands', async () => {
+export const getAllBrandsSlice = createAsyncThunk('trackers/getAllBrands', async (_,{ getState }) => {
 
   console.log("slice execution");
   console.log("hello");
 
   try {
-    const res = await axios.get(apiUrl + "/api/v1/tracker/brands");
+
+    const state = getState();
+    const token = state.user.auth.token;
+
+    const res = await axios.get(apiUrl + "/api/v1/trackers/brands",{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
@@ -28,12 +35,16 @@ export const getAllBrandsSlice = createAsyncThunk('trackers/getAllBrands', async
 });
 
 
-export const addBrandSlice = createAsyncThunk('trackers/addBrand', async (brandState) => {
+export const addBrandSlice = createAsyncThunk('trackers/addBrand', async (brandState_,{ getState }) => {
 
   try {
-    const res = await axios.post(apiUrl + "/api/v1/tracker/brands", {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.post(apiUrl + "/api/v1/trackers/brands", {
       brandName: brandState.brandName,
       originCountry: brandState.originCountry
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
@@ -52,10 +63,14 @@ export const addBrandSlice = createAsyncThunk('trackers/addBrand', async (brandS
   }
 })
 
-export const deleteBrandSlice = createAsyncThunk('trackers/deleteBrand', async (brandId) => {
+export const deleteBrandSlice = createAsyncThunk('trackers/deleteBrand', async (brandId,{ getState }) => {
 
   try {
-    const res = await axios.delete(apiUrl + "/api/v1/tracker/brands/" + brandId);
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.delete(apiUrl + "/api/v1/trackers/brands/" + brandId,{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {
       //console.log(res.data);
@@ -73,15 +88,19 @@ export const deleteBrandSlice = createAsyncThunk('trackers/deleteBrand', async (
   }
 })
 
-export const updateBrandSlice = createAsyncThunk('trackers/updateBrand', async (brandState) => {
+export const updateBrandSlice = createAsyncThunk('trackers/updateBrand', async (brandState,{getState}) => {
 
 
   console.log("+++++++++++++++++", brandState)
   try {
-    const res = await axios.put(apiUrl + "/api/v1/tracker/brands/" + brandState.brandId, {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.put(apiUrl + "/api/v1/trackers/brands/" + brandState.brandId, {
       id: brandState.brandId,
       brandName: brandState.brandName,
       originCountry: brandState.originCountry
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
@@ -102,14 +121,18 @@ export const updateBrandSlice = createAsyncThunk('trackers/updateBrand', async (
 
 
 // MODEL Functions
-export const getAllModelsSlice = createAsyncThunk('trackers/getAllModels', async () => {
+export const getAllModelsSlice = createAsyncThunk('trackers/getAllModels', async (_,{ getState }) => {
 
   try {
-    const res = await axios.get(apiUrl + "/api/v1/tracker/models");
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.get(apiUrl + "/api/v1/trackers/models",{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
-      toast.success(res.data.message)
+      // toast.success(res.data.message)
       return res.data.data;  // Return the data if needed for further use
     } else {
       toast.error(res.data.message)
@@ -121,11 +144,13 @@ export const getAllModelsSlice = createAsyncThunk('trackers/getAllModels', async
 });
 
 
-export const addModelSlice = createAsyncThunk('trackers/addModel', async (modelState) => {
+export const addModelSlice = createAsyncThunk('trackers/addModel', async (modelState,{getState}) => {
 
   try {
     console.log(" slice model add function ", modelState)
-    const res = await axios.post(apiUrl + "/api/v1/tracker/models", {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.post(apiUrl + "/api/v1/trackers/models", {
 
       modelId: modelState.modelId,
       modelName: modelState.modelName,
@@ -134,6 +159,8 @@ export const addModelSlice = createAsyncThunk('trackers/addModel', async (modelS
       networkType: modelState.networkType,
       brand: modelState.brand,
 
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
@@ -153,12 +180,14 @@ export const addModelSlice = createAsyncThunk('trackers/addModel', async (modelS
 })
 
 
-export const updateModelSlice = createAsyncThunk('trackers/updateModel', async (modelState) => {
+export const updateModelSlice = createAsyncThunk('trackers/updateModel', async (modelState,{getState}) => {
 
 
   console.log("+++++++++++++++++", modelState)
   try {
-    const res = await axios.put(apiUrl + "/api/v1/tracker/models/" + modelState.modelId, {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.put(apiUrl + "/api/v1/trackers/models/" + modelState.modelId, {
       id: modelState.modelId,
       batteryLife: modelState.batteryLife,
       brand: modelState.brand,
@@ -166,6 +195,8 @@ export const updateModelSlice = createAsyncThunk('trackers/updateModel', async (
       modelId: modelState.modelId,
       modelName: modelState.modelName,
       networkType: modelState.networkType
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
@@ -186,10 +217,14 @@ export const updateModelSlice = createAsyncThunk('trackers/updateModel', async (
 
 
 
-export const deleteModelSlice = createAsyncThunk('trackers/deleteModel', async (modelId) => {
+export const deleteModelSlice = createAsyncThunk('trackers/deleteModel', async (modelId,{getState}) => {
 
   try {
-    const res = await axios.delete(apiUrl + "/api/v1/tracker/models/" + modelId);
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.delete(apiUrl + "/api/v1/trackers/models/" + modelId,{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {
       //console.log(res.data);
@@ -208,9 +243,12 @@ export const deleteModelSlice = createAsyncThunk('trackers/deleteModel', async (
 })
 
 
-export const addTrackerSlice = createAsyncThunk('trackers/addTracker', async (trackerState) => {
+export const addTrackerSlice = createAsyncThunk('trackers/addTracker', async (trackerState,{ getState }) => {
 
   try {
+
+    const state = getState();
+    const token = state.user.auth.token;
     console.log(" slice model add function ", trackerState)
     const res = await axios.post(apiUrl + "/api/v1/trackers", {
 
@@ -220,6 +258,8 @@ export const addTrackerSlice = createAsyncThunk('trackers/addTracker', async (tr
       simSerialNumber: trackerState.simSerialNumber,
       simNumber: trackerState.simNumber,
       status:trackerState.status
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
@@ -241,14 +281,18 @@ export const addTrackerSlice = createAsyncThunk('trackers/addTracker', async (tr
 
 
 
-export const getAllTrackersSlice = createAsyncThunk('trackers/getAllTrackers', async () => {
+export const getAllTrackersSlice = createAsyncThunk('trackers/getAllTrackers', async (_,{ getState }) => {
 
   try {
-    const res = await axios.get(apiUrl + "/api/v1/trackers");
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.get(apiUrl + "/api/v1/trackers",{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
-      toast.success(res.data.message)
+      // toast.success(res.data.message)
       return res.data.data;  // Return the data if needed for further use
     } else {
       toast.error(res.data.message)
@@ -261,8 +305,11 @@ export const getAllTrackersSlice = createAsyncThunk('trackers/getAllTrackers', a
 
 
 
-export const updateTrackerSlice = createAsyncThunk('trackers/updateTracker', async (trackerState, { rejectWithValue }) => {
+export const updateTrackerSlice = createAsyncThunk('trackers/updateTracker', async (trackerState, { rejectWithValue,getState }) => {
   try {
+
+    const state = getState();
+    const token = state.user.auth.token;
     console.log("update tracker slice ", trackerState);
     const res = await axios.put(apiUrl + "/api/v1/trackers/" + trackerState.id, {
       imei: trackerState.imei,
@@ -272,6 +319,8 @@ export const updateTrackerSlice = createAsyncThunk('trackers/updateTracker', asy
       simNumber: trackerState.simNumber,
       status:trackerState.status
 
+    },{
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
 
@@ -290,10 +339,14 @@ export const updateTrackerSlice = createAsyncThunk('trackers/updateTracker', asy
   }
 });
 
-export const deleteTrackerSlice = createAsyncThunk('trackers/deleteTracker', async (modelId) => {
+export const deleteTrackerSlice = createAsyncThunk('trackers/deleteTracker', async (modelId,{getState}) => {
 
   try {
-    const res = await axios.delete(apiUrl + "/api/v1/trackers/" + modelId);
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.delete(apiUrl + "/api/v1/trackers/" + modelId,{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {
       //console.log(res.data);
@@ -384,7 +437,25 @@ const brandSlice = createSlice({
     },
     closeModalDeleteTracker: (state, action) => {
       state.isOpenDeleteModal = false;
+    },
+    updateTrackerAssociation: (state, action) => {
+      console.log("Tracker action: ", action);
+      state.listTrackers = action.payload;
+      // state.listTrackers = state.listTrackers.map((trac) => {
+      //   console.log("Tracker: ", trac);
+    
+      //   if (trac.id === action.payload) {
+      //     console.log("Target tracker: ", trac);
+      //     // Update the tracker property immutably
+      //     return {
+      //       ...trac,
+      //       isVehicleAssociated: true,
+      //     };
+      //   }
+      //   return trac; // Return unchanged tracker
+      // });
     }
+    
 
 
   },
@@ -622,6 +693,7 @@ const brandSlice = createSlice({
 export const { addVehicle,
   openModalEditBrand, closeModalEditBrand, openModalDeleteBrand, closeModalDeleteBrand,
   openModalEditModel, closeModalEditModel, openModalDeleteModel, closeModalDeleteModel,
-  openModalEditTracker, closeModalEditTracker, openModalDeleteTracker, closeModalDeleteTracker
+  openModalEditTracker, closeModalEditTracker, openModalDeleteTracker, closeModalDeleteTracker,
+  updateTrackerAssociation
 } = brandSlice.actions;
 export default brandSlice.reducer;

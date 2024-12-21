@@ -20,6 +20,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import Email from '@mui/icons-material/Email';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import axios from 'axios';
+import keycloak from '../../keycloak/keycloak';
 
 const Drivers = () => {
 
@@ -111,6 +113,20 @@ const Drivers = () => {
       documentUrl: null
     })
   }
+
+  const fetchFileUrl = async (filePath) => {
+    try {
+        // Make a GET request to the Spring Boot API
+        const response = await axios.get(`http://localhost:8222/minio/retrieve-presigned-url/${filePath}`,{
+          headers: { 'Authorization': `Bearer ${keycloak.token}` }
+        });
+        console.log(response.data)
+        return response.data; // Set the pre-signed URL
+    } catch (error) {
+        console.error('Error fetching file URL:', error);
+    }
+};
+
   const columns = useMemo(
     () => [
 
@@ -124,21 +140,34 @@ const Drivers = () => {
 
 
       {
-
         header: 'Full Name',
         size: 150,
-        Cell: ({ row }) => (
-          <div style={{textAlign:"center",  display: "table"        }}>
-            <div className="avatar"  style={{float:"left"}}>
-              <img 
-              src={row.original.profileImageUrl && row.original.profileImageUrl != null ? row.original.profileImageUrl : "../assets/img/avatars/1.png"} 
-              className="w-px-40 h-auto rounded-circle" alt="avatar-image" aria-label='Avatar Image' />
-            </div>
+        Cell: ({ row }) => {
+            const [imageUrl, setImageUrl] = useState('../assets/img/avatars/1.png'); // Default avatar
 
-            <div  >{row.original.firstName + " " + row.original.lastName}</div>
-            </div>
-        ),
-      },
+            useEffect(() => {
+                if (row.original.profileImageUrl) {
+                    fetchFileUrl(row.original.profileImageUrl).then((url) => {
+                        if (url) setImageUrl(url); // Update image URL once resolved
+                    });
+                }
+            }, [row.original.profileImageUrl]);
+
+            return (
+                <div style={{ textAlign: 'center', display: 'table' }}>
+                    <div className="avatar" style={{ float: 'left' }}>
+                        <img
+                            src={imageUrl}
+                            className="w-px-40 h-auto rounded-circle"
+                            alt="avatar-image"
+                            aria-label="Avatar Image"
+                        />
+                    </div>
+                    <div>{row.original.firstName + ' ' + row.original.lastName}</div>
+                </div>
+            );
+        },
+    },
 
       {
         accessorKey: 'organization',
@@ -181,16 +210,6 @@ const Drivers = () => {
         Cell: ({ row }) => (
           row.original.licenses?.map((license) => {
             return (
-              // <div style={{float:"left"}}>
-              // <Tooltip title="Delete">
-              //   <Avatar
-              //       sx={{ width: 24, height: 24,mx:"3px",fontSize:"14px" }}
-
-              //   >
-              //     {license.licenseClass}
-              //   </Avatar>
-              // </Tooltip>
-              // </div>
               <Badge type="label-primary" rounded ><span style={{ fontSize: "14px" }}>{license.licenseClass}</span></Badge>
 
             )
@@ -237,6 +256,21 @@ const Drivers = () => {
             rounded><b>{row.original.status}</b></Badge>
         }
       },
+
+      {
+        accessorKey: 'available',
+        header: 'available',
+        size: 100,
+        Cell: ({ row }) => {
+          if (row.original.available == true) {
+            return <Badge type={`label-info`} rounded><b>Available</b></Badge>
+          } else {
+            return <Badge type={`label-danger`} rounded><b>Occupied</b></Badge>
+          }
+        }
+      },
+
+
       // {
       //   accessorKey: 'features',
       //   header: 'Features',

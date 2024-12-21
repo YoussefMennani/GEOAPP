@@ -1,5 +1,5 @@
 import { Alert, Button, CardMedia, Chip, Divider, Fab, IconButton, Snackbar, Tooltip } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import './style.css'
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,8 @@ import TaxiAlertOutlinedIcon from '@mui/icons-material/TaxiAlertOutlined';
 import RouteIcon from '@mui/icons-material/Route';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { NavLink } from 'react-router-dom';
+import keycloak from '../../keycloak/keycloak';
+import axios from 'axios';
 const CardVehicle = () => {
 
     const dispatch = useDispatch();
@@ -20,9 +22,36 @@ const CardVehicle = () => {
 
     }
 
+
+
     const { vehicleList, selectedVehicle, locationData } = useSelector((state) => state.map)
 
     const reelVlData = vehicleList[selectedVehicle.lastPosition.imei];
+
+    const [imageUrl, setImageUrl] = useState('../assets/img/vehicleImage/car_pic.jpg'); // Default avatar
+
+    const fetchFileUrl = async (filePath) => {
+        try {
+            // Make a GET request to the Spring Boot API
+            const response = await axios.get(`http://localhost:8222/minio/retrieve-presigned-url/${filePath}`,{
+              headers: { 'Authorization': `Bearer ${keycloak.token}` }
+            });
+            console.log(response.data)
+            return response.data; // Set the pre-signed URL
+        } catch (error) {
+            console.error('Error fetching file URL:', error);
+        }
+    };
+
+    useEffect(() => {
+        console.log(reelVlData)
+        if (reelVlData.imgPath) {
+            fetchFileUrl(reelVlData.imgPath).then((url) => {
+                if (url) setImageUrl(url); // Update image URL once resolved
+            });
+        }
+    }, [reelVlData]);
+
 
     const [open, setOpen] = useState(false);
 
@@ -68,12 +97,13 @@ const CardVehicle = () => {
     }
 
     const cardData = [
-        { icon: 'bx bxs-map', label: 'Location', value: `${reelVlData.lastPosition.latitude}, ${reelVlData.lastPosition.longitude}`, copyable: true },
+        { icon: 'bx bxs-map', label: 'Location', value: `${reelVlData?.lastPosition?.latitude}, ${reelVlData.lastPosition.longitude}`, copyable: true },
         { icon: 'bx bxs-hdd', label: 'IMEI', value: reelVlData.tracker.imei, copyable: true },
         { icon: 'bx bxs-tachometer', label: 'Speed', value: `${reelVlData.lastPosition.speed} Km/h`, copyable: true },
         { icon: 'bx bx-calendar', label: 'Timestamp', value: new Date(reelVlData.lastPosition.timestamp).toLocaleString(), copyable: true },
-        { icon: 'bx bx-user-circle', label: 'Driver', value: 'Driver', copyable: true },
-        { icon: 'bx bxs-buildings', label: 'Organization', value: 'ref Organ', copyable: true },
+        { icon: 'bx bx-user-circle', label: 'Driver', value: reelVlData?.currentDriver?.firstName + " " + reelVlData?.currentDriver?.lastName, copyable: true },
+        { icon: 'bx bxs-phone-call', label: 'Phone', value: reelVlData?.currentDriver?.phoneNumber, copyable: true },
+        { icon: 'bx bxs-buildings', label: 'Organization', value: `${reelVlData.organization}`, copyable: true },
         // { icon: 'bx bxs-car', label: 'model', value: 'Fiat Punto', copyable: true },
         // { icon: 'bx bxs-thermometer', label: 'model', value: 'Fiat Punto', copyable: true },
     ];
@@ -105,130 +135,129 @@ const CardVehicle = () => {
             </Snackbar>
 
 
-                <div className="card h-100">
+            <div className="card h-100">
 
-                    {/* <div>
+                {/* <div>
                     <h5 className="card-title">Card title</h5>
                     <IconButton edge="end" color="inherit" onClick={handleCloseDeleteModal} aria-label="close">
                             <CloseIcon />
                         </IconButton>
                     </div> */}
-                    <div className=" d-flex justify-content-between align-items-center" style={{ padding: "15px" }}>
-                        {console.log("result =============== " + isParked(selectedVehicle.lastPosition.timestamp))}
-                        <Chip avatar={<div className={`spinner-grow ` + (isParked(selectedVehicle.lastPosition.timestamp) === true ? "text-danger" : "text-success")} role="status" style={{ width: "16px", height: "16px" }}></div>}
+                <div className=" d-flex justify-content-between align-items-center" style={{ padding: "15px" }}>
+                    {console.log("result =============== " + isParked(selectedVehicle.lastPosition.timestamp))}
+                    <Chip avatar={<div className={`spinner-grow ` + (isParked(selectedVehicle.lastPosition.timestamp) === true ? "text-danger" : "text-success")} role="status" style={{ width: "16px", height: "16px" }}></div>}
 
-                            label={selectedVehicle.licensePlate} onClick={() => handleClick(selectedVehicle.licensePlate)} sx={{ fontSize: '15px', fontWeight: "bold" }} />
-                        <IconButton edge="end" color="inherit" aria-label="close">
-                            <SignalCellularAltIcon color='primary' />
-                        </IconButton>
-
-
-                        <IconButton edge="end" color="inherit" onClick={handleClosePannel} aria-label="close">
-                            <CloseIcon />
-                        </IconButton>
-                    </div>
+                        label={selectedVehicle.licensePlate} onClick={() => handleClick(selectedVehicle.licensePlate)} sx={{ fontSize: '15px', fontWeight: "bold" }} />
+                    <IconButton edge="end" color="inherit" aria-label="close">
+                        <SignalCellularAltIcon color='primary' />
+                    </IconButton>
 
 
-                    {/* <h6 className="card-subtitle text-muted">Support card subtitle</h6> */}
-                    <div >
+                    <IconButton edge="end" color="inherit" onClick={handleClosePannel} aria-label="close">
+                        <CloseIcon />
+                    </IconButton>
+                </div>
 
-                        <CardMedia
-                            component="img"
-                            height="150"
-                            image="../assets/img/vehicleImage/punto.jpeg"
-                            alt="green iguana"
-                        />
-                        {/* <img aria-label='card image'
+
+                {/* <h6 className="card-subtitle text-muted">Support card subtitle</h6> */}
+                <div >
+
+                    <CardMedia
+                        component="img"
+                        height="150"
+                        image={imageUrl}
+                        alt="green iguana"
+                    />
+                    {/* <img aria-label='card image'
           
                      className="img-fluid" src="../assets/img/elements/13.jpg" alt="Card image cap" /> */}
-                        {/* <Fab variant="extended" size="small" color="primary" 
+                    {/* <Fab variant="extended" size="small" color="primary" 
                             style={{position:"absolute",top:"-100"}}
                         >
                             <CloseIcon sx={{ mr: 1 }} />
                             Extended
                         </Fab> */}
-                        <div style={{ padding: "10px", position: "absolute", top: "-100", marginTop: "-50px", left: "0" }}>
-                            <Fab variant="extended" size="small" color="secondary" sx={{ mr: 1, background: "#000000ab", fontWeight: "bold" }} >
-                                {selectedVehicle.brandVehicle + " " + selectedVehicle.modelVehicle}
+                    <div style={{ padding: "10px", position: "absolute", top: "-100", marginTop: "-50px", left: "0" }}>
+                        <Fab variant="extended" size="small" color="secondary" sx={{ mr: 1, background: "#000000ab", fontWeight: "bold" }} >
+                            {selectedVehicle.brandVehicle + " " + selectedVehicle.modelVehicle}
+                        </Fab>
+                    </div>
+                    <div style={{ padding: "10px", position: "absolute", top: "-100", marginTop: "-50px", right: "0" }}>
+                        <Tooltip title={selectedVehicle.lastPosition.metrics.engineTemperature}>
+                            <Fab variant="extended" size="small" color={selectedVehicle.lastPosition.metrics.engineTemperature < 100 ? "primary" : "error"} sx={{ mr: 1 }} >
+                                <DeviceThermostatOutlinedIcon />
                             </Fab>
-                        </div>
-                        <div style={{ padding: "10px", position: "absolute", top: "-100", marginTop: "-50px", right: "0" }}>
-                            <Tooltip title="97">
-                                <Fab variant="extended" size="small" color="primary" sx={{ mr: 1 }} >
 
-                                    <DeviceThermostatOutlinedIcon />
-                                </Fab>
+                        </Tooltip>
+                        <Tooltip title={selectedVehicle.lastPosition.metrics.checkEngineLight ? "ON" : "OFF"}>
+                            <Fab variant="extended" size="small" color={selectedVehicle.lastPosition.metrics.checkEngineLight ? "warning" : "inherit"} sx={{ mr: 1 }}>
+                                <TaxiAlertOutlinedIcon />
+                            </Fab>
+                        </Tooltip>
 
-                            </Tooltip>
-                            <Tooltip title="off">
-                                <Fab variant="extended" size="small" color="inherit" sx={{ mr: 1 }}>
-                                    <TaxiAlertOutlinedIcon />
-                                </Fab>
-                            </Tooltip>
 
-                            <button aria-label='Click me'
-                                type="button"
-                                className="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <i className="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <ul className="dropdown-menu dropdown-menu-end" style={{ background: "#f6f6f6" }}>
-                                <li>
-                                    <span aria-label="dropdown action link" className="dropdown-item" onClick={handleClickTracking}>
-                                        <NavLink
-                                            to={"history/"+selectedVehicle.licensePlate}
-                                            className="menu-link"
-                                            target='_blank'
-                                        ><GpsFixedIcon /> History</NavLink>
-                                        </span></li>
-                                <li><a aria-label="dropdown action link" className="dropdown-item" href="#">   <RouteIcon /> Tracking</a></li>
-                                <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Something else here</a></li>
-                                <li>
-                                    <hr className="dropdown-divider" />
-                                </li>
-                                <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Separated link</a></li>
-                            </ul>
 
-                        </div>
+                        <button aria-label='Click me'
+                            type="button"
+                            className="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i className="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <ul className="dropdown-menu dropdown-menu-end" style={{ background: "#f6f6f6" }}>
+                            <li>
+                                <span aria-label="dropdown action link" className="dropdown-item" onClick={handleClickTracking}>
+                                    <NavLink
+                                        to={"history/" + selectedVehicle.licensePlate}
+                                        className="menu-link"
+                                        target='_blank'
+                                    ><GpsFixedIcon /> History</NavLink>
+                                </span></li>
+                            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">   <RouteIcon /> Tracking</a></li>
+                            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Something else here</a></li>
+                            <li>
+                                <hr className="dropdown-divider" />
+                            </li>
+                            <li><a aria-label="dropdown action link" className="dropdown-item" href="#">Separated link</a></li>
+                        </ul>
+
                     </div>
-
-
-
-
-                  
-                        <div className="row p-3">
-                            {cardData.map((item, index) => (
-                                <div className="col-sm-6" key={index}>
-                                    <div
-                                        className="row hover-gray"
-                                        onClick={() => item.copyable && handleClick(item.value)} // Copy only if `copyable` is true
-                                        style={{ cursor: item.copyable ? 'pointer' : 'default' }} // Show pointer cursor if copyable
-                                    >
-                                        <label htmlFor="html5-text-input" className="col-md-2 col-form-label">
-                                            <i className={item.icon}></i>
-                                        </label>
-                                        <div className="col-md-10" style={{ margin: 'auto' }}>
-                                           {item.value}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-
-
-                        </div>
-                    
-
-
-
-                    <Divider>Location</Divider>
-                    <div class="px-3 font-weight-normal">
-                        <p onClick={() => handleClick(locationData ? locationData.display_name : 'Unknown')} >{locationData ? locationData.display_name : 'Unknown'}</p>
-                    </div>
-
                 </div>
+
+
+
+
+
+                <div className="row p-3">
+                    {cardData.map((item, index) => (
+                        <div className="col-sm-6" key={index}>
+                            <div
+                                className="row hover-gray"
+                                onClick={() => item.copyable && handleClick(item.value)} // Copy only if `copyable` is true
+                                style={{ cursor: item.copyable ? 'pointer' : 'default' }} // Show pointer cursor if copyable
+                            >
+                                <label htmlFor="html5-text-input" className="col-md-2 col-form-label">
+                                    <i className={item.icon}></i>
+                                </label>
+                                <div className="col-md-10" style={{ margin: 'auto' }}>
+                                    {item.value}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+
+
+
+                <Divider>Location</Divider>
+                <div class="px-3 font-weight-normal">
+                    <p onClick={() => handleClick(locationData ? locationData.display_name : 'Unknown')} >{locationData ? locationData.display_name : 'Unknown'}</p>
+                </div>
+
             </div>
-   
+        </div>
+
 
     )
 }

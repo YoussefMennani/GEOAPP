@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import axios from 'axios';
+import { polygon } from 'leaflet';
 import { toast } from 'react-toastify';
 import { Status } from '../assets/enums/enums';
+import keycloak from '../keycloak/keycloak';
 
 const apiUrl = "http://localhost:8091";
+const apiGateWay = "http://localhost:8222";
 
 const apiPositionUrl = "http://localhost:8092";
 
@@ -38,11 +41,28 @@ const apiNominatim = "http://localhost:8080";
 
 
 
-export const getAllVehiclesMapSlice = createAsyncThunk('map/getAllVehiclesSlice', async () => {
+export const getAllVehiclesMapSlice = createAsyncThunk('map/getAllVehiclesSlice', async (_,{ getState }) => {
 
   try {
-    const res = await axios.get(apiUrl + "/api/v1/vehicles");
 
+    const state = getState();
+    const token = state.user.auth.token;
+    const roles = state.user.userState.realm_access.roles;
+    const organization = state.user.userState.organization;
+    let res = "";
+    if (roles.includes("ADMIN")) {
+       res = await axios.get(apiGateWay + "/api/v1/vehicles", {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+    } else {
+       res = await axios.get(apiGateWay + "/api/v1/vehicles/organization/"+organization, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+    }
+
+   
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
       toast.success(res.data.message)
@@ -57,19 +77,58 @@ export const getAllVehiclesMapSlice = createAsyncThunk('map/getAllVehiclesSlice'
 });
 
 
-export const addPolygone = createAsyncThunk('map/createGeofence', async (polygoneData) => {
-    console.log("createGeofence action...")
+export const addPolygone = createAsyncThunk('map/createGeofence', async (data, { getState }) => {
+
+  const state = getState();
+  // console.log("state++++++++",state)
+  const token = state.user.auth.token; // Assuming your token is stored in the auth slice.
+
+  console.log("createGeofence add action... ", data)
   try {
-    const res = await axios.post(apiPositionUrl + "/api/v1/geofence/create",{
-      username:"john_doe",
-      timestamp:Date.now(),
-      locations:polygoneData[0]
+    const res = await axios.post(apiGateWay + "/api/v1/positions/geofence/create", {
+      // username: data.username,
+      username:state.user.userState.organization,
+      label: data.label,
+      timestamp: Date.now(),
+      locations: data.polygoneData[0],
+      color: "#5594e8"
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`  // Use the token here.
+      }
     });
 
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
       toast.success(res.data.message)
-      return res.data.data;  // Return the data if needed for further use
+      return res.data;  // Return the data if needed for further use
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (error) {
+    console.error("Error fetching brands:", error);
+    throw error;  // Rethrow error to handle in the async thunk
+  }
+});
+
+
+export const getPolygone = createAsyncThunk('map/getPolygone', async (data, { getState }) => {
+
+  const state = getState();
+  // console.log("state++++++++",state)
+  const token = state.user.auth.token; // Assuming your token is stored in the auth slice.
+
+
+  console.log("getPolygone get action...", data)
+  try {
+    const res = await axios.get(apiGateWay + "/api/v1/positions/geofence/by-username/" + (state.user.userState.organization || "UNKOWN"), {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 200) {  // Checking for HTTP 200 status
+      console.log(res.data);
+      // toast.success(res.data.message)
+      return res.data;  // Return the data if needed for further use
     } else {
       toast.error(res.data.message)
     }
@@ -80,25 +139,52 @@ export const addPolygone = createAsyncThunk('map/createGeofence', async (polygon
 });
 
 
-export const getPolygone = createAsyncThunk('map/getPolygone', async (polygoneData) => {
-  console.log("getPolygone action...")
-try {
-  const res = await axios.get(apiPositionUrl + "/api/v1/geofence/by-username/john_doe");
 
-  if (res.status === 200) {  // Checking for HTTP 200 status
-    console.log(res.data);
-    // toast.success(res.data.message)
-    return res.data;  // Return the data if needed for further use
-  } else {
-    toast.error(res.data.message)
+export const updateShape = createAsyncThunk('map/updateShape', async (shapeData,{getState}) => {
+  console.log("shapeData action...")
+  try {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.put(apiGateWay + "/api/v1/positions/geofence/update/" + shapeData.id, { ...shapeData }
+    ,{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 200) {  // Checking for HTTP 200 status
+      console.log(res.data);
+      // toast.success(res.data.message)
+      return res.data;  // Return the data if needed for further use
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (error) {
+    console.error("Error fetching brands:", error.message);
+    throw error;  // Rethrow error to handle in the async thunk
   }
-} catch (error) {
-  console.error("Error fetching brands:", error.message);
-  throw error;  // Rethrow error to handle in the async thunk
-}
 });
 
+export const deleteShape = createAsyncThunk('map/deleteShape', async (shapeDataId,{getState}) => {
+  console.log("deleteShape shapeData action...")
+  try {
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.delete(apiGateWay + "/api/v1/positions/geofence/delete/" + shapeDataId
+    ,{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
+    if (res.status === 200) {  // Checking for HTTP 200 status
+      console.log(res.data);
+      // toast.success(res.data.message)
+      return res.data;  // Return the data if needed for further use
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (error) {
+    console.error("Error fetching brands:", error.message);
+    throw error;  // Rethrow error to handle in the async thunk
+  }
+});
 
 
 // export const updateVehicleSlice = createAsyncThunk('vehicles/updateVehicleSlice', async (vehicleState, { rejectWithValue }) => {
@@ -165,14 +251,19 @@ export const fetchVehicleLocation = createAsyncThunk(
 
 export const fetchHistoryVehicle = createAsyncThunk(
   'map/fetchHistoryVehicle',
-  async ({ vehicleID, startDateTime, endDateTime }, { rejectWithValue }) => {
+  async ({ vehicleID, startDateTime, endDateTime }, { rejectWithValue,getState }) => {
     try {
-      console.log(" data ",{ vehicleID, startDateTime, endDateTime })
+      const state = getState();
+      const token = state.user.auth.token;
+      console.log(" data ", { vehicleID, startDateTime, endDateTime })
       const res = await axios.get(
         `${apiUrl}/api/v1/vehicles/history?vehicleID=${vehicleID}&startDateTime=${startDateTime}&endDateTime=${endDateTime}`
-      );
+        ,{
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+        );
       if (res.status === 200) {
-        console.log("response from history",res.data)
+        console.log("response from history", res.data)
         return res.data; // Return geocoding data
       } else {
         toast.error("Failed to fetch Tracking data.");
@@ -193,13 +284,14 @@ const mapSlice = createSlice({
     selectedVehicle: {},
     vehicleList: [],
     trackingResponse: {},
-    listPolygon:[],
+    listPolygon: [],
     mapSettings: {
-      reelTimeTracking:true,
-      darkMode:false,
-      pathCorrection:true,
+      reelTimeTracking: true,
+      darkMode: false,
+      pathCorrection: false,
     },
     isOpenShowVehiclePanel: false,
+    isOpenShowPolygonPanel: true,
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
     locationData: null, // To store location data
@@ -219,8 +311,8 @@ const mapSlice = createSlice({
       //state.list.push(action.payload);
       console.log(" =========> data kafka vl ", action.payload);
       // state.selectedVehicle = action.payload;
-      state.vehicleList[action.payload.imei].lastPosition =  action.payload;
-
+      state.vehicleList[action.payload.imei].lastPosition = action.payload;
+      state.vehicleList[action.payload.imei].currentDriver = action.payload.driver;
       // if( state.selectedVehicle && action.payload.imei == state.selectedVehicle.lastPosition.imei){
       //   state.selectedVehicle.lastPosition = action.payload;
       // }
@@ -233,20 +325,26 @@ const mapSlice = createSlice({
     },
     closePanelShowVehicle: (state, action) => {
       state.isOpenShowVehiclePanel = false;
-      state.selectedVehicle={}
+      state.selectedVehicle = {}
     },
-
+    // POLYGON PANEL
+    openPanelShowPolygon: (state, action) => {
+      state.isOpenShowPolygonPanel = true;
+    },
+    closePanelShowPolygon: (state, action) => {
+      state.isOpenShowPolygonPanel = false;
+    },
     updateReelTimeTrackingChecking: (state, action) => {
       state.mapSettings.reelTimeTracking = action.payload;
-      toast.info("Real time tracking "+ (action.payload == true ? "enabled" : "disabled"))
+      toast.info("Real time tracking " + (action.payload == true ? "enabled" : "disabled"))
     },
     updateDarkModeChecking: (state, action) => {
       state.mapSettings.darkMode = action.payload;
-      toast.info("Dark Mode "+ (action.payload == true ? "enabled" : "disabled"))
+      toast.info("Dark Mode " + (action.payload == true ? "enabled" : "disabled"))
     },
     updatePathCorrectionChecking: (state, action) => {
       state.mapSettings.pathCorrection = action.payload;
-      toast.info("Path Correction  "+ (action.payload == true ? "enabled" : "disabled"))
+      toast.info("Path Correction  " + (action.payload == true ? "enabled" : "disabled"))
     },
     handleDisableVehicle: (state, action) => {
       // state.mapSettings.reelTimeTracking = action.payload;
@@ -254,6 +352,20 @@ const mapSlice = createSlice({
       // console.log(action.payload)
       state.vehicleList[action.payload].disabled = !state.vehicleList[action.payload].disabled
     },
+
+    handleChangeColorPolygon: (state, action) => {
+      const { id, color } = action.payload;
+      console.log(id, color)
+      state.listPolygon = state.listPolygon.map((polygon) => {
+        if (polygon.id === id) {
+          polygon.color = color;
+          return polygon;
+        } else {
+          return polygon
+        }
+      })
+
+    }
 
 
   },
@@ -294,11 +406,11 @@ const mapSlice = createSlice({
       .addCase(getAllVehiclesMapSlice.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.vehicleList = action.payload.reduce((acc, vl) => {
-          acc[vl.tracker.imei] = { ...vl,disabled:false }; // Add each vehicle with its IMEI as the key
+          acc[vl.tracker.imei] = { ...vl, disabled: false }; // Add each vehicle with its IMEI as the key
           return acc;
-      }
-      , {}
-      );
+        }
+          , {}
+        );
       })
       .addCase(getAllVehiclesMapSlice.rejected, (state, action) => {
         state.status = 'failed';
@@ -311,7 +423,7 @@ const mapSlice = createSlice({
       })
       .addCase(addPolygone.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // state.locationData = action.payload;
+        state.listPolygon.push(action.payload);
         console.log(state.payload)
       })
       .addCase(addPolygone.rejected, (state, action) => {
@@ -331,11 +443,46 @@ const mapSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       })
+      //update shape
+      .addCase(updateShape.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateShape.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        toast.success("Shape data updted successfully")
+        state.listPolygon = state.listPolygon.map((polygon) => {
+          if (polygon.id == action.payload.id) {
+            return action.payload
+          }
+          return polygon;
+        })
+      })
+      .addCase(updateShape.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+        toast.error("Something went wrong. If the problem persists, please contact support.");
 
+      })
+      .addCase(deleteShape.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteShape.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        toast.info("Shape deleted")
+        state.listPolygon = state.listPolygon.filter(pol => pol.id != action.payload)
+      })
+      .addCase(deleteShape.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+        toast.error("Something went wrong. If the problem persists, please contact support.");
+
+      })
   },
 
 
 });
 
-export const { handleSelectVehicle, openPanelShowVehicle, closePanelShowVehicle,handleUpdateListVlState,updateReelTimeTrackingChecking,handleDisableVehicle,updateDarkModeChecking ,updatePathCorrectionChecking} = mapSlice.actions;
+export const { handleSelectVehicle, openPanelShowVehicle, closePanelShowVehicle, handleUpdateListVlState,
+  updateReelTimeTrackingChecking, handleDisableVehicle, updateDarkModeChecking, updatePathCorrectionChecking,
+  openPanelShowPolygon, closePanelShowPolygon, handleChangeColorPolygon } = mapSlice.actions;
 export default mapSlice.reducer;

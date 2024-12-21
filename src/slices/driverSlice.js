@@ -4,28 +4,41 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Status } from '../assets/enums/enums';
 
-const apiUrl = "http://localhost:8097";
+// const apiUrl = "http://localhost:8097";
+const apiUrl = "http://localhost:8222";
 
 
 
-export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (driverState) => {
+export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (driverState, { getState }) => {
 
   try {
-    console.log(" slice driver add function ", driverState)
 
-    const responseUrlImg = await axios.get(`http://localhost:9002/minio/generate-presigned-url/image-driver/${Date.now()}`);
+    const state = getState();
+    const token = state.user.auth.token;
+    
+    console.log(" slice driver add function ", driverState)
+    const imgFilePath = `image-driver/${Date.now()}`;
+    const responseUrlImg = await axios.get(`http://localhost:8222/minio/generate-presigned-url/${imgFilePath}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     const presignedUrlImg = responseUrlImg.data;
     console.log(" Minio  avatar url : " + presignedUrlImg)
 
-
-    const responseUrlFile = await axios.get(`http://localhost:9002/minio/generate-presigned-url/file-driver/${Date.now()}`);
+    const docFilePath = `file-driver/${Date.now()}`;
+    const responseUrlFile = await axios.get(`http://localhost:8222/minio/generate-presigned-url/${docFilePath}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     const presignedUrlFile = responseUrlFile.data;
     console.log(" Minio  file url : " + presignedUrlFile)
 
+ 
+
     const res = await axios.post(apiUrl + "/api/v1/drivers", {
       ...driverState,
-      profileImageUrl: presignedUrlImg,
-      documentUrl: presignedUrlFile
+      profileImageUrl: imgFilePath,
+      documentUrl: docFilePath
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.status === 200) {
       if (driverState.profileImageUrl != null || driverState.documentUrl != null) {
@@ -37,8 +50,8 @@ export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (drive
               'Content-Type': driverState.profileImageUrl.type,
             },
           });
-          if (ResponseUploadProfileImage.status === 200 ) {
-            alert("Image profile uploaded successfully!");
+          if (ResponseUploadProfileImage.status === 200) {
+            toast.success("Image profile uploaded successfully!");
           }
 
         }
@@ -50,7 +63,7 @@ export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (drive
             },
           });
           if (ResponseUploadDocumentUrl.status === 200) {
-            alert("File uploaded successfully!");
+            toast.success("File uploaded successfully!");
           }
 
         }
@@ -77,15 +90,20 @@ export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (drive
 
 
 
-export const getAllDriversSlice = createAsyncThunk('drivers/getAllDriversSlice', async () => {
+export const getAllDriversSlice = createAsyncThunk('drivers/getAllDriversSlice', async (_, { getState }) => {
 
   try {
-    const res = await axios.get(apiUrl + "/api/v1/drivers");
+    const state = getState();
+    const token = state.user.auth.token;
+    const res = await axios.get(apiUrl + "/api/v1/drivers", {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
 
     if (res.status === 200) {  // Checking for HTTP 200 status
       //console.log(res.data);
       toast.success(res.data.message)
       return res.data;  // Return the data if needed for further use
+
     } else {
       toast.error(res.data.message)
     }
@@ -96,11 +114,16 @@ export const getAllDriversSlice = createAsyncThunk('drivers/getAllDriversSlice',
 });
 
 
-
-
-
-
-
+const fetchFileUrl = async (filePath) => {
+  try {
+    // Make a GET request to the Spring Boot API
+    const response = await axios.get(`http://localhost:9002/minio/retrieve-presigned-url/${filePath}`);
+    console.log(response.data)
+    return response.data; // Set the pre-signed URL
+  } catch (error) {
+    console.error('Error fetching file URL:', error);
+  }
+};
 
 
 const driverSlice = createSlice({

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import menuData from '../data/menuData.json'
 
 const Sidebar = () => {
 
+    const {menu} = useSelector((state)=> state.user )
 
     return (
         <aside id="layout-menu" className="layout-menu menu-vertical menu bg-menu-theme">
@@ -23,7 +25,9 @@ const Sidebar = () => {
             <div className="menu-inner-shadow"></div>
 
             <ul className="menu-inner py-1">
-                {menuData.map((section) => (
+                {
+                // menuData.map((section) => (
+                    menu && menu.map((section) => (
                     <React.Fragment key={section.header}>
                         {section.header && (
                             <li className="menu-header small text-uppercase">

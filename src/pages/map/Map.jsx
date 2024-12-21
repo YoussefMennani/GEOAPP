@@ -34,6 +34,9 @@ import { Client, Stomp } from '@stomp/stompjs';
 import CardVehicle from "./CardVehicle";
 import { addPolygone, fetchVehicleLocation, getAllVehiclesMapSlice, getPolygone, handleSelectVehicle, handleUpdateListVlState, openPanelShowVehicle } from "../../slices/mapSlice";
 import { getAllVehiclesSlice } from "../../slices/vehicleSlice";
+import { useKeycloak } from "@react-keycloak/web";
+import GeoFency from "./geoFency/geoFency";
+import { ShapePopUp } from "./geoFency/ShapePopUp";
 
 const ComponentResize = () => {
   const map = useMap();
@@ -64,16 +67,25 @@ const names = [
 const Map = () => {
   const [searchListVl, setSearchListVl] = useState([])
   const dispatch = useDispatch();
+  const { keycloak } = useKeycloak()
 
-  const { selectedVehicle,isOpenShowVehiclePanel,status,vehicleList,mapSettings,listPolygon } = useSelector((state) => state.map);
+  const { selectedVehicle, isOpenShowVehiclePanel, status, vehicleList, mapSettings, listPolygon, isOpenShowPolygonPanel } = useSelector((state) => state.map);
+
+
+  useEffect(() => {
+    console.log(" polygone chanegd !")
+    console.log(listPolygon)
+  }, [listPolygon])
 
   useEffect(() => {
     if (status === 'idle') {
       //dispatch(getAllTrackersSlice());
-      dispatch(getAllVehiclesMapSlice())
+      dispatch(getAllVehiclesMapSlice(keycloak.token))
       // dispatch(getAllBrandsSlice());
       // dispatch(getAllModelsSlice());
-      dispatch(getPolygone())
+      dispatch(getPolygone({
+        username:keycloak.tokenParsed.preferred_username,
+      }))
 
     }
   }, [status, dispatch]);
@@ -96,12 +108,17 @@ const Map = () => {
     if (type === "marker") {
       // Do marker specific actions
       console.log("_onCreated: marker created", e);
-     
+
     } else {
       console.log("_onCreated: something else created:", type, e);
       let poylygone = e.layer.getLatLngs();
-      dispatch(addPolygone(poylygone));
-      
+      const data = {
+        polygoneData:poylygone,
+        username:keycloak.tokenParsed.preferred_username,
+        label:"label_"+(Math.floor(100000 + Math.random() * 900000))
+      }
+      dispatch(addPolygone(data));
+
     }
     // Do whatever else you need to. (save to db; etc)
 
@@ -377,10 +394,10 @@ const Map = () => {
             try {
               const newData = JSON.parse(message.body);
               console.log(newData);
-  
+
               // Dispatch to update vehicle state
               dispatch(handleUpdateListVlState(newData));
-              if(selectedVehicle.lastPosition && selectedVehicle.lastPosition.imei == newData.imei){
+              if (selectedVehicle.lastPosition && selectedVehicle.lastPosition.imei == newData.imei) {
                 console.log("fetch send for posi")
                 dispatch(fetchVehicleLocation(newData));
               }
@@ -393,9 +410,9 @@ const Map = () => {
           console.error('STOMP error:', frame.headers['message']);
         },
       });
-  
+
       stompClient.activate();
-  
+
       // Cleanup WebSocket connection
       return () => {
         stompClient.deactivate();
@@ -409,6 +426,7 @@ const Map = () => {
   // const { listVehicles } = useSelector((state) => state.vehicles);
 
   const [mouseXY, setMouseXY] = useState({})
+  const [hoveredPolygon, setHoveredPolygon] = useState(null);
 
   return (
     <>
@@ -485,16 +503,34 @@ const Map = () => {
       >
 
         {/* Draw polygone */}
-        
+
         {
-          listPolygon.map((polygoneData)=>{
-            console.log(" polygone draw ",polygoneData)
-            return (<Polygon positions={polygoneData.locations} color="blue" />)
+          listPolygon.map((polygoneData) => {
+            console.log(" polygone draw ", polygoneData)
+            return (
+              <Polygon positions={polygoneData.locations}
+                // color={polygoneData.color} 
+                pathOptions={{ color: polygoneData.color }}
+                key={polygoneData.id}
+                // eventHandlers={{
+                //   mouseover: () => setHoveredPolygon(polygoneData.id),
+                //   mouseout: () => setHoveredPolygon(null),
+                // }}
+              >
+
+                {/* {hoveredPolygon === polygoneData.id && ( */}
+                  <Popup maxWidth="auto" maxHeight="auto">
+                    <ShapePopUp polygoneData={polygoneData}/>
+                
+                  </Popup>
+                {/* )} */}
+              </Polygon>
+            )
 
           })
         }
 
-        
+
         <div style={{
           // background: 'red',
           padding: '5px',
@@ -513,9 +549,9 @@ const Map = () => {
         </div>
 
 
-        { isOpenShowVehiclePanel && <CardVehicle mouseXY={mouseXY} />}
+        {isOpenShowVehiclePanel && <CardVehicle mouseXY={mouseXY} />}
 
-
+        {/* <GeoFency /> */}
         <LayersControl>
           <BaseLayer name="OpenStreetMap" checked>
             <TileLayer
@@ -567,33 +603,33 @@ const Map = () => {
           />
         </FeatureGroup>
         {
-        
-        
-        Object.keys(vehicleList).length > 0 && Object.values(vehicleList).map((pos)=> (
-          
-          !pos.disabled && <Marker position={[pos?.lastPosition?.latitude, pos?.lastPosition?.longitude]} icon={MarkerExporter("car")}
-          
-            eventHandlers={{
-              click: (event) => {
-                
-                console.log("Mouse Coordinates:", event.containerPoint); // Log x and y coordinates
-                console.log(event)
-                setMouseXY(event.containerPoint)
-                if(!isOpenShowVehiclePanel){
-                   dispatch(openPanelShowVehicle())     
-                }
-                dispatch(handleSelectVehicle(pos))
-                const { latitude, longitude } = pos.lastPosition;
-                dispatch(fetchVehicleLocation({ latitude, longitude }));           
+
+
+          Object.keys(vehicleList).length > 0 && Object.values(vehicleList).map((pos) => (
+
+            !pos.disabled && pos.lastPosition && <Marker position={[pos?.lastPosition?.latitude, pos?.lastPosition?.longitude]} icon={MarkerExporter("car")}
+
+              eventHandlers={{
+                click: (event) => {
+
+                  console.log("Mouse Coordinates:", event.containerPoint); // Log x and y coordinates
+                  console.log(event)
+                  setMouseXY(event.containerPoint)
+                  if (!isOpenShowVehiclePanel) {
+                    dispatch(openPanelShowVehicle())
+                  }
+                  dispatch(handleSelectVehicle(pos))
+                  const { latitude, longitude } = pos.lastPosition;
+                  dispatch(fetchVehicleLocation({ latitude, longitude }));
                   console.log("Marker data:", pos); // Log the data of the clicked marker
-              },
-            }}
-          >
+                },
+              }}
+            >
 
-            {/* <PopupMarker imei={pos.imei} /> */}
+              {/* <PopupMarker imei={pos.imei} /> */}
 
-          </Marker>
-        ))}
+            </Marker>
+          ))}
 
       </MapContainer>
     </>

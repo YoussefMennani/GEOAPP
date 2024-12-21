@@ -5,6 +5,7 @@ const brands = [
     { idBrand: 3, nameBrand: 'Ford' },
     { idBrand: 4, nameBrand: 'BMW' },
     { idBrand: 5, nameBrand: 'Tesla' },
+    { idBrand: 6, nameBrand: 'Fiat' },
 ];
 
 export default brands;

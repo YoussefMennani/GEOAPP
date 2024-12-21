@@ -1,9 +1,33 @@
 import { useEffect } from "react";
+import { getAllTrackersSlice } from "../slices/brandSlice";
+import { getAllDriversSlice } from "../slices/driverSlice";
+import { getAllVehiclesSlice } from "../slices/vehicleSlice";
+import { useDispatch, useSelector } from 'react-redux';
 
 export const DashboardPage = () => {
+
+    const dispatch = useDispatch();
+
+
     useEffect(() => {
         dashboardAnalitics();
     }, [])
+
+    const { listVehicles } = useSelector((state) => state.vehicles);
+    const { listTrackers } = useSelector((state) => state.trackers);
+    const { listDrivers } = useSelector((state) => state.drivers);
+
+
+    useEffect(() => {
+
+        dispatch(getAllTrackersSlice());
+        dispatch(getAllVehiclesSlice())
+        // dispatch(getAllBrandsSlice());
+        dispatch(getAllDriversSlice())
+        // dispatch(getAllModelsSlice());
+    }, [dispatch]);
+
+
     return (
         <>
             <div className="row">
@@ -48,13 +72,16 @@ export const DashboardPage = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="card-title d-flex align-items-start justify-content-between">
-                                        <div className="avatar flex-shrink-0">
-                                            <img aria-label='dsahboard icon image'
+
+                                        {/* <img aria-label='dsahboard icon image'
                                                 src="/assets/img/icons/unicons/chart-success.png"
                                                 alt="chart success"
                                                 className="rounded"
-                                            />
+                                            /> */}
+                                        <div className="flex-shrink-0" style={{ border: "1px solid #eefbe7", background: "#eefbe7", padding: "5px 10px", borderRadius: "5px" }}>
+                                            <i class='bx bxs-car' style={{ color: "#76de3e", margin: "auto", fontSize: "20px" }}></i>
                                         </div>
+
                                         <div className="dropdown">
                                             <button aria-label='Click me'
                                                 className="btn p-0"
@@ -79,8 +106,8 @@ export const DashboardPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <span className="fw-medium d-block mb-1">Profit</span>
-                                    <h3 className="card-title mb-2">$12,628</h3>
+                                    <span className="fw-medium d-block mb-1">Vehicle</span>
+                                    <h3 className="card-title mb-2">{listVehicles.length}</h3>
                                     <small className="text-success fw-medium">
                                         <i className="bx bx-up-arrow-alt"></i> +72.80%
                                     </small>
@@ -91,12 +118,8 @@ export const DashboardPage = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="card-title d-flex align-items-start justify-content-between">
-                                        <div className="avatar flex-shrink-0">
-                                            <img aria-label='dsahboard icon image'
-                                                src="/assets/img/icons/unicons/wallet-info.png"
-                                                alt="Credit Card"
-                                                className="rounded"
-                                            />
+                                        <div className="flex-shrink-0" style={{ border: "1px solid #e0f7fc", background: "#e0f7fc", padding: "5px 10px", borderRadius: "5px" }}>
+                                            <i class='bx bx-devices' style={{ color: "#10c6ed", margin: "auto", fontSize: "20px" }}></i>
                                         </div>
                                         <div className="dropdown">
                                             <button aria-label='Click me'
@@ -122,8 +145,8 @@ export const DashboardPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <span>Sales</span>
-                                    <h3 className="card-title text-nowrap mb-1">$4,679</h3>
+                                    <span>Trackers</span>
+                                    <h3 className="card-title text-nowrap mb-1">{listTrackers.length}</h3>
                                     <small className="text-success fw-medium">
                                         <i className="bx bx-up-arrow-alt"></i> +28.42%
                                     </small>
@@ -209,12 +232,8 @@ export const DashboardPage = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="card-title d-flex align-items-start justify-content-between">
-                                        <div className="avatar flex-shrink-0">
-                                            <img aria-label='dsahboard icon image'
-                                                src="/assets/img/icons/unicons/paypal.png"
-                                                alt="Credit Card"
-                                                className="rounded"
-                                            />
+                                    <div className="flex-shrink-0" style={{ border: "1px solid rgb(255 231 227)", background: "rgb(255 231 227)", padding: "5px 10px", borderRadius: "5px" }}>
+                                            <i class='bx bxs-user-rectangle' style={{ color: "#ff3e1d", margin: "auto", fontSize: "20px" }}></i>
                                         </div>
                                         <div className="dropdown">
                                             <button aria-label='Click me'
@@ -240,8 +259,8 @@ export const DashboardPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <span className="d-block mb-1">Payments</span>
-                                    <h3 className="card-title text-nowrap mb-2">$2,456</h3>
+                                    <span className="d-block mb-1">Drivers</span>
+                                    <h3 className="card-title text-nowrap mb-2">{listDrivers.length}</h3>
                                     <small className="text-danger fw-medium">
                                         <i className="bx bx-down-arrow-alt"></i> -14.82%
                                     </small>
@@ -252,12 +271,8 @@ export const DashboardPage = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="card-title d-flex align-items-start justify-content-between">
-                                        <div className="avatar flex-shrink-0">
-                                            <img aria-label='dsahboard icon image'
-                                                src="/assets/img/icons/unicons/cc-primary.png"
-                                                alt="Credit Card"
-                                                className="rounded"
-                                            />
+                                    <div className="flex-shrink-0" style={{ border: "1px solid  #ededff", background: " #ededff", padding: "5px 10px", borderRadius: "5px" }}>
+                                            <i class='bx bx-devices' style={{ color: "#696cff", margin: "auto", fontSize: "20px" }}></i>
                                         </div>
                                         <div className="dropdown">
                                             <button aria-label='Click me'
