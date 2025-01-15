@@ -5,6 +5,8 @@
 'use strict';
 
 function dashboardAnalitics() {
+
+  
   let cardColor, headingColor, axisColor, shadeColor, borderColor;
 
   cardColor = config.colors.cardColor;
@@ -667,4 +669,5 @@ function dashboardAnalitics() {
     const weeklyExpenses = new ApexCharts(weeklyExpensesEl, weeklyExpensesConfig);
     weeklyExpenses.render();
   }
+  
 };

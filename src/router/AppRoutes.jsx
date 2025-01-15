@@ -56,6 +56,12 @@ import Brand from "../pages/tracker_gps/Brand";
 import Model from "../pages/tracker_gps/Model";
 import MapHistory from "../pages/map-history/MapHistory";
 import PrivateRoute from "./PrivateRoute";
+import DashboardAnomaly from "../pages/anomaly_detection/DashboardAnomaly";
+import UserManager from "../pages/users/UserManager";
+import Profils from "../pages/profils/Profils";
+import Menu from "../pages/organization/Menu";
+import Organization from "../pages/org/Organization";
+import OrganizationPage from "../pages/org/OrganizationPage";
 
 
 const AppRoutes = () => {
@@ -142,7 +148,22 @@ const AppRoutes = () => {
 
       {/* Driver */}
       <Route path="/drivers/drivers_manager" element={<Drivers />} />
+      
+      {/* Anomaly */}
+      <Route path="/anomaly/dashboard" element={<DashboardAnomaly />} />
 
+      {/* User Manager */}
+      <Route path="/users/user_manager" element={<UserManager />} />
+
+      {/* menu Manager */}
+      <Route path="/menu/menu_manager" element={<Menu />} />
+
+      {/* profiles Manager */}
+      <Route path="/profiles/profile_manager" element={<Profils />} />
+
+      {/* Organization Manager */}
+      <Route path="/organization" element={<OrganizationPage />} />
+      <Route path="/organization/organization_manager" element={<Organization />} />
     </Routes>
 
   );

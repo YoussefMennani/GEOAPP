@@ -5,7 +5,12 @@ import mapReducer from '../slices/mapSlice';
 import notificationReducer from '../slices/notificationSlice';
 import driverReducer from '../slices/driverSlice';
 import userReducer from '../slices/userSlice';
+import anomalyDetection from '../slices/anomalyDetectionSlice';
+import profilReducer from '../slices/profilSlice';
+import organizationReducer from '../slices/organizationSlice';
 
+
+import menuReducer from '../slices/menuSlice';
 
 const store = configureStore({
   reducer: {
@@ -14,7 +19,11 @@ const store = configureStore({
     map: mapReducer,
     notification:notificationReducer,
     drivers:driverReducer,
-    user:userReducer
+    user:userReducer,
+    anomalyDetection:anomalyDetection,
+    menu:menuReducer,
+    profil:profilReducer,
+    organization:organizationReducer
   },
 });
 

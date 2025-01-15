@@ -22,6 +22,8 @@ const BannerUpTable = ({
 
       <div className="">
 
+        {labelButton.length > 0 &&
+        
         <button
           type="button"
           className="btn btn-primary "
@@ -32,6 +34,8 @@ const BannerUpTable = ({
         >
           <span className={`tf-icons bx ${imageButton} me-2`}></span> {labelButton}
         </button>
+        }
+        
       </div>
     </div>
   );

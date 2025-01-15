@@ -26,7 +26,7 @@ const CardVehicle = () => {
 
     const { vehicleList, selectedVehicle, locationData } = useSelector((state) => state.map)
 
-    const reelVlData = vehicleList[selectedVehicle.lastPosition.imei];
+    const reelVlData = vehicleList[selectedVehicle?.lastPosition?.imei];
 
     const [imageUrl, setImageUrl] = useState('../assets/img/vehicleImage/car_pic.jpg'); // Default avatar
 

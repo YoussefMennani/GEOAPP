@@ -15,7 +15,7 @@ export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (drive
 
     const state = getState();
     const token = state.user.auth.token;
-    
+
     console.log(" slice driver add function ", driverState)
     const imgFilePath = `image-driver/${Date.now()}`;
     const responseUrlImg = await axios.get(`http://localhost:8222/minio/generate-presigned-url/${imgFilePath}`, {
@@ -31,7 +31,7 @@ export const addDriverSlice = createAsyncThunk('drivers/addDriver', async (drive
     const presignedUrlFile = responseUrlFile.data;
     console.log(" Minio  file url : " + presignedUrlFile)
 
- 
+
 
     const res = await axios.post(apiUrl + "/api/v1/drivers", {
       ...driverState,

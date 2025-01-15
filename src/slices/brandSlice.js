@@ -35,7 +35,7 @@ export const getAllBrandsSlice = createAsyncThunk('trackers/getAllBrands', async
 });
 
 
-export const addBrandSlice = createAsyncThunk('trackers/addBrand', async (brandState_,{ getState }) => {
+export const addBrandSlice = createAsyncThunk('trackers/addBrand', async (brandState,{ getState }) => {
 
   try {
     const state = getState();

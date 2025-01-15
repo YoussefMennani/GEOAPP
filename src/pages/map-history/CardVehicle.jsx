@@ -74,7 +74,7 @@ const CardVehicle = ({ setvehiclePath, setPositionList }) => {
 
     }
 
-    const [imageUrl, setImageUrl] = useState('../assets/img/vehicleImage/car_pic.jpg'); // Default avatar
+    const [imageUrl, setImageUrl] = useState('../../assets/img/vehicleImage/car_pic.jpg'); // Default avatar
 
     const fetchFileUrl = async (filePath) => {
         try {
@@ -211,17 +211,6 @@ const CardVehicle = ({ setvehiclePath, setPositionList }) => {
         console.log(" +++++++++++++++++++++++++++++++++++ TRACKING ++++++++++++++++++++++++++++++++++++++ ")
         console.log(selectedVehicle)
     }
-
-    const cardData = [
-        { icon: 'bx bxs-map', label: 'Location', value: `${reelVlData?.lastPosition?.latitude}, ${reelVlData?.lastPosition?.longitude}`, copyable: true },
-        { icon: 'bx bxs-hdd', label: 'IMEI', value: reelVlData?.tracker?.imei, copyable: true },
-        { icon: 'bx bxs-tachometer', label: 'Speed', value: `${reelVlData?.lastPosition?.speed} Km/h`, copyable: true },
-        { icon: 'bx bx-calendar', label: 'Timestamp', value: new Date(reelVlData?.lastPosition?.timestamp).toLocaleString(), copyable: true },
-        { icon: 'bx bx-user-circle', label: 'Driver', value: 'Driver', copyable: true },
-        { icon: 'bx bxs-buildings', label: 'Organization', value: 'ref Organ', copyable: true },
-        // { icon: 'bx bxs-car', label: 'model', value: 'Fiat Punto', copyable: true },
-        // { icon: 'bx bxs-thermometer', label: 'model', value: 'Fiat Punto', copyable: true },
-    ];
 
     return (
         <>

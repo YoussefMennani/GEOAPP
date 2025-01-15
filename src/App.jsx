@@ -65,9 +65,11 @@ function App() {
           </AppRoutes>
         ) : (
           <Provider store={store}>
-            <PrivateRoute><Layout>
+            <PrivateRoute>
+              <Layout>
               <AppRoutes />
-            </Layout></PrivateRoute>
+            </Layout>
+            </PrivateRoute>
           </Provider>
         )}
 

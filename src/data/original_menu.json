@@ -77,6 +77,59 @@
                 ]
             },
             {
+                "text": "Profils",
+                "icon": "bx bxs-user-account",
+                "available": true,
+                "link": "/users",
+                "submenu": [
+                  {
+                    "text": "Profil manager",
+                    "available": true,
+                    "link": "/profils/profil_manager"
+                  }
+                ]
+              },
+            {
+                "text": "Users",
+                "icon": "bx bxs-user",
+                "available": true,
+                "link": "/users",
+                "submenu": [
+                  {
+                    "text": "User manager",
+                    "available": true,
+                    "link": "/users/user_manager"
+                  }
+                ]
+              },
+              {
+                "text": "Menu",
+                "icon": "bx bxs-window-alt",
+                "available": true,
+                "link": "/menu",
+                "submenu": [
+                  {
+                    "text": "Menu manager",
+                    "available": true,
+                    "link": "/menu/menu_manager"
+                  }
+                ]
+              },
+              {
+                "text": "Organization",
+                "icon": "bx bxs-buildings",
+                "available": true,
+                "link": "/organization",
+                "submenu": [
+                  {
+                    "text": "Organization manager",
+                    "available": true,
+                    "link": "/organization"
+                  }
+                ]
+              },
+            
+            {
                 "text": "Layouts",
                 "icon": "bx bx-layout",
                 "available": true,

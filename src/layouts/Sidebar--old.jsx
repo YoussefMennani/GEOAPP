@@ -13,7 +13,7 @@ const Sidebar___old = () => {
             <div className="app-brand demo">
                 <Link aria-label='Navigate to sneat homepage' to="/" className="app-brand-link">
                     <span className="app-brand-logo demo">
-                        <img src="/assets/img/sneat.svg" alt="sneat-logo" aria-label='Sneat logo image' />
+                        <img src="/assets/img/logo.png" alt="sneat-logo" aria-label='Sneat logo image' />
                     </span>
                     <span className="app-brand-text demo menu-text fw-bold ms-2">Sneat</span>
                 </Link>

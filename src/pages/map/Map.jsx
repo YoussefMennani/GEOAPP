@@ -608,7 +608,7 @@ const Map = () => {
           Object.keys(vehicleList).length > 0 && Object.values(vehicleList).map((pos) => (
 
             !pos.disabled && pos.lastPosition && <Marker position={[pos?.lastPosition?.latitude, pos?.lastPosition?.longitude]} icon={MarkerExporter("car")}
-
+              
               eventHandlers={{
                 click: (event) => {
 

@@ -146,7 +146,7 @@ const Notification = () => {
                 <div class="row">
 
                   <div class="col-sm-12">
-                    <small className="text-muted"> <Chip avatar={<FmdBadIcon />} label="Avatar" /></small>
+                    {/* <small className="text-muted"> <Chip avatar={<FmdBadIcon />} label="Avatar" /></small> */}
                     <small className="text-muted"> <Chip avatar={<CarCrashIcon />} label={alert.licensePlate} /></small>
 
                     <small className="text-muted" style={{ float: "right" }}> <Chip avatar={<InsertInvitationIcon/>} label={formatTimestamp(alert.timestamp)} /></small>
