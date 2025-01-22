@@ -1,23 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { MaterialReactTable } from 'material-react-table';
+import React, { useEffect, useState } from 'react';
 import BannerUpTable from '../layouts/BannerUpTable';
 import { useDispatch, useSelector } from 'react-redux';
-import Badge from '../../components/atoms/Badges';
-import { getAllDriversSlice, openModalDeleteDriver, openModalEditDriver } from '../../slices/driverSlice';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import axios from 'axios';
-import keycloak from '../../keycloak/keycloak';
-import { getAllProfiles, getMenuProfilSlice, openModaAddProfillMenu } from '../../slices/profilSlice';
-import ProfileCard from './OrganizationCard';
+import { openModalDeleteDriver } from '../../slices/driverSlice';
 import OrganizationCard from './OrganizationCard';
-import ModalAddOrg from './modal/ModalAddOrg';
-import { getOrganizationSlice, openModalAddOrganization } from '../../slices/organizationSlice';
+import { getOrganizationRootSlice, openModalAddOrganization, openModalAddOrganizationHeader, setTargetEntity } from '../../slices/organizationSlice';
+import ModalAddMenuHeader from './modal/ModalAddMenuHeader';
 
 const OrganizationPage = () => {
 
   const dispatch = useDispatch();
   // const { listTrackers } = useSelector((state) => state.trackers);
-  const {  organizationList, status } = useSelector((state) => state.organization);
+  const {  organizationRoot, status } = useSelector((state) => state.organization);
   const [entityState, setEntityState] = useState({
     name: "",
     description: "",
@@ -31,7 +24,7 @@ const OrganizationPage = () => {
 
   useEffect(() => {
     if (status === 'idle') {
-      dispatch(getOrganizationSlice());
+      dispatch(getOrganizationRootSlice());
     }
   }, [status, dispatch]);
 
@@ -53,9 +46,8 @@ const OrganizationPage = () => {
 
 
   const onClickAddButton = () => {
-    dispatch(openModalAddOrganization())
-    clearState()
-    setIsEdit(false)
+    dispatch(setTargetEntity({id:null,name:null,id:null}))
+    dispatch(openModalAddOrganizationHeader())
   }
 
   const clearState = () => {
@@ -82,13 +74,12 @@ const OrganizationPage = () => {
         onClickAddButton={onClickAddButton}
 
       />
-      <ModalAddOrg entityState={entityState} isEdit={isEdit} setEntityState={setEntityState} />
  
 
-      <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", padding: "20px",display:"flex",justifyContent:"space-between",flexWrap:"wrap" }}>
+      <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", padding: "20px",display:"flex",justifyContent:"flex-start",flexWrap:"wrap" }}>
         {
-          organizationList.length > 0 ? (
-            organizationList.map((organizationData) => <OrganizationCard key={organizationData.id} data={organizationData} />)
+          organizationRoot.length > 0 ? (
+            organizationRoot.map((organizationData) => <OrganizationCard key={organizationData.id} data={organizationData} />)
           ) : (
             <h3>No data found</h3>
           )
@@ -96,6 +87,8 @@ const OrganizationPage = () => {
 
       </div>
       {/* <MaterialReactTable columns={columns} data={listDrivers} state={{ isLoading: status != "succeeded" ? true : false }} />; */}
+      <ModalAddMenuHeader/>
+
     </>
   );
 };

@@ -51,6 +51,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
   const { listBrand } = useSelector((state) => state.trackers.brand);
   // const { listModel } = useSelector((state) => state.trackers.model);
   const { listTrackers, status } = useSelector((state) => state.trackers);
+  const { organizationRoot } = useSelector((state) => state.organization);
 
 
   const [modelSelector, setModelSelector] = useState(models)
@@ -211,15 +212,15 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       }
       ))
 
-      const newTrackersList = listTrackers.map((tracker)=>{
+      const newTrackersList = listTrackers.map((tracker) => {
         console.log(" ++++++++++++ test +++++++++++++++")
         console.log(fullTrackerData.id)
         console.log(tracker)
-        if( fullTrackerData.id === tracker.id){
-          return  {...tracker, vehicleAssociated: true}
+        if (fullTrackerData.id === tracker.id) {
+          return { ...tracker, vehicleAssociated: true }
         }
-         return tracker; 
-        
+        return tracker;
+
       })
 
       dispatch(updateTrackerAssociation(newTrackersList))
@@ -242,7 +243,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       // Here you can add the logic to update the data
       const fullTrackerData = listTrackers.filter((tracker) => tracker.id == entityState.tracker)[0]
       console.log("...........fullTrackerData", fullTrackerData)
-      console.log("on change input img ",entityState)
+      console.log("on change input img ", entityState)
 
       dispatch(updateVehicleSlice({
         ...entityState,
@@ -329,7 +330,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
               <select value={entityState.tracker} className={`form-control ${errorsList.tracker ? "is-invalid" : ""}`} onChange={onChangeFormBrand} name="tracker" id="tracker" defaultValue="" >
                 <option value="">Select Tracker</option>
                 {listTrackers.map(tracker => {
-                  
+
                   return (
                     !tracker.vehicleAssociated && <option key={tracker.id} value={tracker.id}>
                       {tracker.imei}
@@ -493,15 +494,11 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
                 onChange={onChangeFormBrand} value={entityState.organization}
                 name="organization" id="organization" >
                 <option value="">Select Organization</option>
-
                 {
-
-                  organizations.map(org => {
-                    if (keycloak.tokenParsed.realm_access.roles.includes("ADMIN") || org.name == keycloak.tokenParsed.organization) {
-                      return (<option key={org.id} value={org.name}>
-                        {org.name}
-                      </option>)
-                    }
+                  organizationRoot.map(org => {
+                    return (<option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>)
                   })
                 }
               </select>
@@ -511,7 +508,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
             </div>
 
             <div className="mb-3 col-sm-6">
-            <label htmlFor="status" className="form-label">Photo</label>
+              <label htmlFor="status" className="form-label">Photo</label>
 
               <div className="button-wrapper">
                 <label htmlFor="imgPath" className="btn btn-primary me-2 mb-4" tabIndex="0">

@@ -1,180 +1,186 @@
-import { Divider, IconButton } from '@mui/material'
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { getMenuSlice, handleExpandMenu, openModalMenu, saveMenuSlice } from '../../slices/menuSlice'
-import BannerUpTable from '../layouts/BannerUpTable'
-import ModalAddMenuHeader from './modal/ModalAddMenuHeader'
-import OrganizationRow from './OrganizationRow'
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { IconButton, Divider } from '@mui/material';
+import {
+    deleteOrganization,
+  getOrganizationByIdSlice,
+  openModalAddOrganizationHeader,
+  saveChnagesTargetOrg,
+  saveOrganizationSlice,
+  setTargetEntity,
+} from '../../slices/organizationSlice';
+import OrganizationRow from './OrganizationRow';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
-import FitScreenIcon from '@mui/icons-material/FitScreen';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { useLocation, useNavigate } from 'react-router-dom'
-import { getOrganizationByIdSlice, openModalAddOrganizationHeader, saveChnagesOrganization, saveChnagesTargetOrg, saveOrganizationSlice } from '../../slices/organizationSlice'
+import ModalAddMenuHeader from './modal/ModalAddMenuHeader';
 
 const Organization = () => {
-    const { organizationTarget } = useSelector((state) => state.organization);
-    const location = useLocation();
-    const navigate = useNavigate();
+  const { organizationTarget } = useSelector((state) => state.organization);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { organizationData } = location.state || {};
+  const dispatch = useDispatch();
 
-    const { organizationData } = location.state || {}; 
-
-
-
-    const dispatch = useDispatch();
-
-    const onClickAddHeaderMenu = () => {
-        dispatch(openModalAddOrganizationHeader())
+  // Redirect if organizationData is missing
+  useEffect(() => {
+    if (!organizationData) {
+      navigate('/organization');
     }
+  }, [organizationData, navigate]);
 
-    useEffect(() => {
-        // Redirect to fallback page if organizationData is missing
-        if (!organizationData) {
-          navigate('/organization');
-        }
-      }, [organizationData, navigate]);
-
-
-useEffect(() => {
+  // Fetch organization data
+  useEffect(() => {
     if (organizationData) {
-        console.log(organizationData);
-        dispatch(getOrganizationByIdSlice(organizationData.id));
+      dispatch(getOrganizationByIdSlice(organizationData.id));
     }
-}, [organizationData, dispatch]);
+  }, [organizationData, dispatch]);
+
+  // Add a new child organization
+  const addChildOrganization = (organizationData) => {
+    dispatch(setTargetEntity(organizationData))
+    dispatch(openModalAddOrganizationHeader())
+  };
+
+  // Helper function to recursively add a child
+  const addChildToOrganization = (children, parentId, newChild) => {
+    return children.map((child) => {
+      if (child.id === parentId) {
+        return {
+          ...child,
+          children: [...child.children, newChild],
+        };
+      } else if (child.children.length > 0) {
+        return {
+          ...child,
+          children: addChildToOrganization(child.children, parentId, newChild),
+        };
+      }
+      return child;
+    });
+  };
+
+  // Delete an organization
+  const handleDelete = (id) => {
+    dispatch(deleteOrganization(id));
+};
+
+  // Helper function to recursively delete a child
+  const deleteChildFromOrganization = (children, id) => {
+    return children
+      .filter((child) => child.id !== id) // Remove the target organization
+      .map((child) => ({
+        ...child,
+        children: deleteChildFromOrganization(child.children, id), // Recursively process children
+      }));
+  };
+
+  // Toggle collapse/expand for an organization
+  const toggleCollapse = (id) => {
+    const updatedOrganization = {
+      ...organizationTarget,
+      children: toggleCollapseInOrganization(organizationTarget.children, id),
+    };
+
+    dispatch(saveChnagesTargetOrg(updatedOrganization));
+  };
+
+  // Helper function to recursively toggle collapse
+  const toggleCollapseInOrganization = (children, id) => {
+    return children.map((child) => {
+      if (child.id === id) {
+        return {
+          ...child,
+          collapsed: !child.collapsed,
+        };
+      } else if (child.children.length > 0) {
+        return {
+          ...child,
+          children: toggleCollapseInOrganization(child.children, id),
+        };
+      }
+      return child;
+    });
+  };
 
 
+  const onClickShowModalAddEntity = () =>{
+    console.log(organizationData)
+    dispatch(setTargetEntity(organizationData))
+    dispatch(openModalAddOrganizationHeader())
+  }
+  return (
+    <>
+      <div className="d-flex justify-content-between align-items-end my-3">
+        <div className="fs-5">
+          <span className="text-muted fw-light">Organization /</span> Organization Manager /{' '}
+          {organizationData?.name || ''}
+        </div>
+        <div>
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={onClickShowModalAddEntity}
+          >
+            <span className="tf-icons bx bx bxs-add-to-queue me-2"></span> Add Organization
+          </button>
+        </div>
+      </div>
 
-    const addMenu = (header) => {
-        console.log(header, organizationTarget)
-        const updatedMenu = organizationTarget.data.map((item) => {
-            const newItem = { ...item }
-            if (newItem.header == header) {
-                newItem.collapsed = true
-                newItem.items = [
-                    ...(newItem.items || []),
-                    {
-                        id: Math.random(),
-                        name: null,
-                        collapsed: false,
-                        items: []
-                    }
-                ];
-            }
-            return newItem
-        })
-        console.log(updatedMenu);
-        dispatch(saveChnagesTargetOrg({
-            ...organizationData,
-            data: updatedMenu
-        }))
-        // handleChangeDisplay(targetId)
-    }
-
-    const deleteHeader = (headerName) => {
-        const updatedMenu = organizationTarget.data.filter((item) => item.header != headerName)
-        console.log(updatedMenu)
-        dispatch(saveOrganizationSlice({
-            ...organizationTarget,
-            data: updatedMenu
-        }))
-        dispatch(saveChnagesTargetOrg({
-            ...organizationTarget,
-            data: updatedMenu
-        }))
-
-    }
-
-
-    
-    const handleChangeDisplay = (header) => {
-    
-        const updatedMenu = organizationTarget.data.map((item) => {
-            const newItem = { ...item}
-            if(item.header == header){
-                newItem.collapsed=!newItem.collapsed
-            }
-            return newItem
-        })
-        console.log(updatedMenu);
-        dispatch(saveChnagesTargetOrg({
-
-           ...organizationTarget,
-            data: updatedMenu
-        }))
-        // handleChangeDisplay(targetId)
-    }
-
-
-    return (
-
-        <>
-
-
-            <div class="d-flex justify-content-between  align-items-end my-3">
-                <div className="fs-5">
-                    <span className="text-muted fw-light"> Organization /</span> Organization Manager / {organizationData?.name || ''}
-                </div>
-
-                <div className="">
-                    <button
-                        type="button"
-                        className="btn btn-dark "
-                        onClick={() => onClickAddHeaderMenu()}
+      {organizationTarget.children &&
+        organizationTarget.children.map((org, index) => (
+          <div
+            key={org.id || index}
+            style={{ padding: '20px 0px', backgroundColor: 'white', borderRadius: '5px', margin: '10px 0px' }}
+          >
+            <div className="row px-2">
+              <div className="col-md-2">
+                <IconButton
+                  color="primary"
+                  aria-label="add an alarm"
+                  style={{ backgroundColor: '#b3b3f1db', margin: 'auto 10px' }}
+                  onClick={() => addChildOrganization(org)}
+                >
+                  <PlaylistAddIcon />
+                </IconButton>
+                <IconButton
+                  color="warning"
+                  aria-label="add an alarm"
+                  style={{ backgroundColor: '#ff000026' }}
+                  onClick={() => handleDelete(org.id)}
+                >
+                  <LayersClearIcon />
+                </IconButton>
+              </div>
+              <div className="col-md-10" style={{ textAlign: 'right' }} onClick={() => toggleCollapse(org.id)}>
+                <h4 style={{ margin: 'auto 20px' }}>
+                  {org.collapsed ? (
+                    <IconButton color="secondary" aria-label="add an alarm" onClick={() => toggleCollapse(org.id)}>
+                      <KeyboardArrowDownIcon />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      color="secondary"
+                      aria-label="add an alarm"
+                      onClick={() => toggleCollapse(org.id)}
+                      disabled={org.children.length === 0}
                     >
-                        <span className={`tf-icons bx bx bxs-add-to-queue me-2`}></span> Add Menu
-                    </button>
-
-                </div>
+                      <KeyboardArrowRightIcon />
+                    </IconButton>
+                  )}{' '}
+                  {org.name}
+                </h4>
+              </div>
             </div>
+            {org.collapsed && <OrganizationRow data={org.children} />}
+          </div>
+        ))}
 
+      <ModalAddMenuHeader/>
+    </>
+  );
+};
 
-
-            {
-                organizationTarget.data && organizationTarget.data.map((val,index) => {
-
-                    return (
-                        <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", margin: "10px 0px" }}
-                        key={val.header || index}
-
-                        >
-                            <div className='row px-2'>
-
-                                <div className='col-md-2' >
-                                   
-                                    <IconButton color="primary" aria-label="add an alarm" style={{ backgroundColor: "#b3b3f1db", margin: "auto 10px" }} onClick={() => addMenu(val.header)} >
-                                        <PlaylistAddIcon />
-                                    </IconButton>
-                                    <IconButton color="warning" aria-label="add an alarm" style={{ backgroundColor: "#ff000026" }} onClick={() => deleteHeader(val.header)} >
-                                        <LayersClearIcon />
-                                    </IconButton>
-                                </div>
-                                <div className='col-md-10 ' style={{ textAlign: "right" }} onClick={() => handleChangeDisplay(val.header)} >
-                                    <h4 style={{ margin: " auto 20px" }}>  {
-                                         val.collapsed ?
-                                         <IconButton color="secondary" aria-label="add an alarm"  onClick={() => handleChangeDisplay(val.header)}>
-                                             <KeyboardArrowDownIcon />
-                                         </IconButton>
-                                         :  
-                                         <IconButton color="secondary" aria-label="add an alarm"  onClick={() => handleChangeDisplay(val.header)} disabled={  (val?.items  && val?.items.length > 0) == false } >
-                                             <KeyboardArrowRightIcon />
-                                         </IconButton>
-                                    } {val.header}</h4>
-
-                                </div>
-                            </div>
-                            {/* <Divider/> */}
-                            { val.collapsed  && <OrganizationRow data={val.items} />}
-                        
-                        </div>
-                    )
-                })
-            }
-
-            <ModalAddMenuHeader />
-        </>
-    )
-}
-
-export default Organization
+export default Organization;

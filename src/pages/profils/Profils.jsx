@@ -11,6 +11,7 @@ import ModalAddProfil from './modals/ModalAddProfile';
 import ModalConfirmProfilDeletion from './modals/ModalConfirmProfilDeletion';
 import { getAllProfiles, getMenuProfilSlice, openModaAddProfillMenu } from '../../slices/profilSlice';
 import ProfileCard from './ProfileCard';
+import { getOrganizationRootSlice } from '../../slices/organizationSlice';
 
 const Drivers = () => {
 
@@ -20,7 +21,9 @@ const Drivers = () => {
   const [entityState, setEntityState] = useState({
     name: "",
     description: "",
-    menu: {}
+    role:"",
+    menu: {},
+    organization:""
   });
 
 
@@ -32,6 +35,8 @@ const Drivers = () => {
     if (status === 'idle') {
       dispatch(getMenuProfilSlice("menu1"));
       dispatch(getAllProfiles());
+      dispatch(getOrganizationRootSlice());
+
     }
   }, [status, dispatch]);
 
@@ -104,7 +109,7 @@ const Drivers = () => {
       <ModalConfirmProfilDeletion entity={entityState}
       />
 
-      <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", padding: "20px",display:"flex",justifyContent:"space-between",flexWrap:"wrap" }}>
+      <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", padding: "20px",display:"flex",justifyContent:"flex-start",flexWrap:"wrap" }}>
         {
           profilesList.length > 0 ? (
             profilesList.map((profileData) => <ProfileCard key={profileData.id} data={profileData} />)

@@ -21,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import organizations from "../../vehicles/data/org";
 import keycloak from "../../../keycloak/keycloak";
 import { getAllProfiles } from "../../../slices/profilSlice";
-import { getOrganizationSlice } from "../../../slices/organizationSlice";
+import { getOrganizationRootSlice, getOrganizationSlice } from "../../../slices/organizationSlice";
 import { addUserSlice } from "../../../slices/userSlice";
 
 const style = {
@@ -40,7 +40,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
   const dispatch = useDispatch();
   const { isOpenEditModal } = useSelector((state) => state.drivers);
   const { profilesList } = useSelector((state) => state.profil);
-  const { organizationList } = useSelector((state) => state.organization);
+  const { organizationRoot } = useSelector((state) => state.organization);
 
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
@@ -112,10 +112,10 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
 
   useEffect(() => {
 
-    dispatch(getOrganizationSlice());
-      dispatch(getAllProfiles());
-    
-  }, [dispatch]);
+    dispatch(getOrganizationRootSlice());
+    dispatch(getAllProfiles());
+
+  }, []);
 
 
   // Validate the form
@@ -425,7 +425,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
 
           {currentPage === 2 && <div className="row">
 
-          <div className="mb-3 col-md-6">
+            <div className="mb-3 col-md-6">
               <label htmlFor="lastName" className="form-label">
                 username
               </label>
@@ -500,7 +500,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
                 <option value="">Select Organization</option>
                 {
 
-                  organizationList.map(org => {
+                  organizationRoot.map(org => {
                     return (<option key={org.id} value={org.id}>
                       {org.name}
                     </option>)

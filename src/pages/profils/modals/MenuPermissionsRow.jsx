@@ -20,7 +20,7 @@ const MenuPermissionsRow = ({ data }) => {
     const handleChangeDisplay = (id) => {
         console.log(menuList)
         const updatedMenu = menuList.data.map((item) => {
-            return { header: item.header, items: getItem(item.items, id), collapsed: item.collapsed }
+            return { ...item, items: getItem(item.items, id), collapsed: item.collapsed }
         })
         console.log(updatedMenu);
         dispatch(handleExpandMenu({
@@ -208,45 +208,74 @@ const MenuPermissionsRow = ({ data }) => {
         });
     };
 
-    const onChangeCheckBox = (id, operation, event) => {
-        const isChecked = event.target.checked; // Get the checkbox state
-        console.log(id, operation, isChecked);
-    
-        const updatedMenu = menuList.data.map((item) => ({
-            ...item,
-            items: onChangeSubCheckBox(item.items, id, operation, isChecked),
-        }));
-    
-        dispatch(
-            handleExpandMenu({
-                menuName: menuList.menuName,
-                data: updatedMenu,
-            })
-        );
-    };
-    
-    const onChangeSubCheckBox = (menuList, targetId, operation, isChecked) => {
-        return menuList.map((item) => {
-            const newItem = { ...item }; // Shallow copy for immutability
-    
-            if (newItem.id === targetId) {
-                console.log(`operation update for item: ${targetId}`);
-                // Update operation dynamically
-                newItem.operation = {
-                    ...newItem.operation,
-                    [operation]: isChecked, // Toggle specific permission
-                };
-            }
-    
-            if (newItem.submenu) {
-                // Recursively process submenus
-                newItem.submenu = onChangeSubCheckBox(newItem.submenu, targetId, operation, isChecked);
-            }
-    
-            return newItem;
-        });
-    };
-    
+            const onChangeCheckBox = (id, operation, event) => {
+                const isChecked = event.target.checked; // Get the checkbox state
+                console.log(id, operation, isChecked);
+            
+                const updatedMenu = menuList.data.map((item) => ({
+                    ...item,
+                    items: onChangeSubCheckBox(item.items, id, operation, isChecked),
+                }));
+            
+                dispatch(
+                    handleExpandMenu({
+                        menuName: menuList.menuName,
+                        data: updatedMenu,
+                    })
+                );
+            };
+            
+            const onChangeSubCheckBox = (menuList, targetId, operation, isChecked) => {
+                return menuList.map((item) => {
+                    const newItem = { ...item }; // Shallow copy for immutability
+            
+                    if (newItem.id === targetId) {
+                        console.log(`operation update for item: ${targetId}`);
+                        // Update operation dynamically
+                        newItem.operation = {
+                            ...newItem.operation,
+                            [operation]: isChecked, // Toggle specific permission
+                        };
+                        if (newItem.submenu && newItem.submenu.length > 0) {
+                            // Recursively process submenus
+                            newItem.submenu = changeSubItems(newItem.submenu, operation, isChecked);
+                        }
+                    }
+            
+                    if (newItem.submenu) {
+                        // Recursively process submenus
+                        newItem.submenu = onChangeSubCheckBox(newItem.submenu, targetId, operation, isChecked);
+                    }
+            
+                    return newItem;
+                });
+            };
+
+
+            const changeSubItems = (subItems, operation, isChecked) => {
+                console.log(subItems);
+                const updatedSubItems = subItems?.map((item) => {
+                    console.log(item);
+                    const newOne = {
+                        ...item,
+                        operation: {
+                            ...item.operation,
+                            [operation]: isChecked // Update only the relevant operation
+                        }
+                    };
+            
+                    // Recursively update submenu items if they exist
+                    if (item.submenu && item.submenu.length > 0) {
+                        newOne.submenu = changeSubItems(item.submenu, operation, isChecked);
+                    }
+            
+                    return newOne;
+                });
+            
+                console.log(updatedSubItems);
+                return updatedSubItems;
+            };
+            
 
     const deleteMenu = (id) => {
         console.log("delete");

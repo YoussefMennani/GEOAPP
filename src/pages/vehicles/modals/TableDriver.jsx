@@ -8,18 +8,14 @@ import { getAllDriversSlice, openModalDeleteDriver } from '../../../slices/drive
 import Badge from '../../../components/atoms/Badges';
 import { assignDriverSlice } from '../../../slices/vehicleSlice';
 
-const TableDriver = ({vehicleId}) => {
+const TableDriver = ({ vehicleId }) => {
     const dispatch = useDispatch();
 
     const { listDrivers, status } = useSelector((state) => state.drivers);
 
     useEffect(() => {
-       
-          dispatch(getAllDriversSlice());
-        
-      }, [dispatch]);
-
-      
+        dispatch(getAllDriversSlice());
+    }, [dispatch]);
 
     useEffect(() => {
         if (status === 'idle') {
@@ -28,13 +24,8 @@ const TableDriver = ({vehicleId}) => {
     }, [status, dispatch]);
 
     const assignDriverToVehicle = async (vehicleId, driverId) => {
-        console.log(vehicleId+"  =========>  "+driverId)
-        // setEntityState((prevState) => ({
-        //     ...prevState,
-        //     id: vehicleId,
-        //     licensePlate: licensePlate,
-        // }));
-        await dispatch(assignDriverSlice({vehicleId,driverId}));
+        console.log(vehicleId + "  =========>  " + driverId);
+        await dispatch(assignDriverSlice({ vehicleId, driverId }));
     };
 
     const filteredDrivers = useMemo(() => {
@@ -104,38 +95,34 @@ const TableDriver = ({vehicleId}) => {
                         </Badge>
                     )),
             },
-
             {
                 accessorKey: 'status',
                 header: 'status',
                 size: 100,
                 Cell: ({ row }) => {
-                  return <Badge type={`label-${row.original.status == "Active" ? 'success' : row.original.status == "Mission" ? 'dark' : 'danger'
-                    }`}
-                    rounded><b>{row.original.status}</b></Badge>
+                    return <Badge type={`label-${row.original.status == "Active" ? 'success' : row.original.status == "Mission" ? 'dark' : 'danger'
+                        }`}
+                        rounded><b>{row.original.status}</b></Badge>
                 }
-              },
-        
-              {
+            },
+            {
                 accessorKey: 'available',
                 header: 'available',
                 size: 100,
                 Cell: ({ row }) => {
-                  if(row.original.available == true){
-                    return <Badge type={`label-info`} rounded><b>Available</b></Badge>
-                  }else{
-                    return <Badge type={`label-danger`} rounded><b>Occupied</b></Badge>
-                  }
+                    if (row.original.available == true) {
+                        return <Badge type={`label-info`} rounded><b>Available</b></Badge>
+                    } else {
+                        return <Badge type={`label-danger`} rounded><b>Occupied</b></Badge>
+                    }
                 }
-              },
-
+            },
             {
                 id: 'actions',
                 header: 'Actions',
                 size: 100,
                 Cell: ({ row }) => (
                     <div className="d-grid gap-2 d-md-flex">
-                        
                         <button
                             type="button"
                             className="btn btn-primary btn-sm"
@@ -143,7 +130,7 @@ const TableDriver = ({vehicleId}) => {
                             data-bs-target="#modalToggle"
                             onClick={() => assignDriverToVehicle(vehicleId, row.original.id)}
                         >
-                            <i class='bx bx-intersect'></i> LINK
+                            <i className='bx bx-intersect'></i> LINK
                         </button>
                     </div>
                 ),
@@ -157,6 +144,10 @@ const TableDriver = ({vehicleId}) => {
             columns={columns}
             data={filteredDrivers}
             state={{ isLoading: status !== "succeeded" }}
+            initialState={{
+                pagination: { pageSize: 4, pageIndex: 0 },
+            }}
+            enablePagination={true}
         />
     );
 };

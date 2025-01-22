@@ -79,6 +79,7 @@ const MenuRow = ({ data }) => {
                         text: null,
                         available: true,
                         link: null,
+                        icon:null,
                         collapsed: false
                     }
                 ];
@@ -95,12 +96,14 @@ const MenuRow = ({ data }) => {
 
     const [menuState, setMenuState] = useState({
         text: null,
-        link: null
+        link: null,
+        icon:null,
     })
 
     const [errorsList, setErrorsList] = useState({
         text: "",
-        link: ""
+        link: "",
+        icon:"",
     })
     const [isTouched, setisTouched] = useState(false)
 
@@ -126,7 +129,7 @@ const MenuRow = ({ data }) => {
     // ---------------------------------------------- add MENU ----------------------------------------------
     const onClickValidateAddMenu = (id) => {
         console.log(menuList, menuState)
-        if (menuState.link != null && menuState.text != null) {
+        if (menuState.link != null && menuState.text != null  && menuState.icon != null) {
 
             const updatedMenu = menuList.data.map((item) => {
                 return { header: item.header, items: updateItem(item.items, id) }
@@ -138,9 +141,9 @@ const MenuRow = ({ data }) => {
                     menuName: menuList.menuName,
                     data: updatedMenu
                 }))
-            setMenuState((prev) => ({ ...prev, link: "", text: "" }))
+            setMenuState((prev) => ({ ...prev, link: "", text: "",icon:"" }))
         } else {
-            let errors = { text: "", link: "" };
+            let errors = { text: "", link: "" , icon:"" };
 
             if (!menuState.text || menuState.text.trim() === "") {
                 errors.text = "text is required.";
@@ -148,6 +151,10 @@ const MenuRow = ({ data }) => {
 
             if (!menuState.link || menuState.link.trim() === "") {
                 errors.link = "link is required.";
+            }
+
+            if (!menuState.icon || menuState.icon.trim() === "") {
+                errors.icon = "link is required.";
             }
 
             setErrorsList(errors); // Update errors state
@@ -167,6 +174,7 @@ const MenuRow = ({ data }) => {
                 console.log("found !!!!!!!!!!");
                 newItem.text = menuState.text; // Update the copy, not the original
                 newItem.link = menuState.link; // Update the copy, not the original
+                newItem.icon = menuState.icon
             }
 
             if (newItem.submenu) {
@@ -178,15 +186,15 @@ const MenuRow = ({ data }) => {
         });
     };
 
-    const handleEditMenu = (id, text, link) => {
-        console.log(id, text, link)
+    const handleEditMenu = (id, text, link,icon) => {
+        console.log(id, text, link,icon)
         console.log(menuList)
-        const updatedMenu = menuList.map((item) => {
-            return { header: item.header, items: updateisEdit(item.items, id) }
+        const updatedMenu = menuList.data.map((item) => {
+            return {  ...item, header: item.header, items: updateisEdit(item.items, id) }
         })
-        console.log(updatedMenu);
-        setMenuState((prev) => ({ ...prev, text: text, link: link }))
-        dispatch(saveMenuSlice(updatedMenu))
+        console.log( { menuName:menuList.menuName,data:updatedMenu});
+         setMenuState((prev) => ({ ...prev, text: text, link: link, icon:icon }))
+        dispatch(handleExpandMenu({ menuName:menuList.menuName,data:updatedMenu}))
     }
 
     const updateisEdit = (menuList, targetId) => {
@@ -197,6 +205,8 @@ const MenuRow = ({ data }) => {
             if (newItem.id === targetId) {
                 console.log("found !!!!!!!!!!");
                 newItem.isEdit = !newItem.isEdit; // Update the copy, not the original
+                newItem.collapsed = menuState.collapsed
+
             }
 
             if (newItem.submenu) {
@@ -209,8 +219,6 @@ const MenuRow = ({ data }) => {
     };
 
     const handleUpdateMenu = (id, text, link) => {
-        console.log(id, text, link)
-        console.log(menuList)
         const updatedMenu = menuList.data.map((item) => {
             return { header: item.header, items: handleUpdateSubMenu(item.items, id) }
         })
@@ -229,11 +237,13 @@ const MenuRow = ({ data }) => {
                 newItem.isEdit = !newItem.isEdit;
                 newItem.text = menuState.text;
                 newItem.link = menuState.link;
+                newItem.icon = menuState.icon;
+                // newItem.collapsed = menuState.collapsed
             }
 
             if (newItem.submenu) {
                 // Recursively process the submenu
-                newItem.submenu = saveMenuSlice(newItem.submenu, targetId);
+                newItem.submenu = handleUpdateSubMenu(newItem.submenu, targetId);
             }
 
             return newItem;
@@ -276,7 +286,7 @@ const MenuRow = ({ data }) => {
     };
 
     return (
-
+            
         data?.map((menuData) => {
 
             return (
@@ -300,7 +310,7 @@ const MenuRow = ({ data }) => {
                                 </IconButton>
                         }
                     </div>
-                    <div className='col-md-4' style={{ margin: "auto 0", fontSize: "16px" }}>
+                    <div className='col-md-3' style={{ margin: "auto 0", fontSize: "16px" }}>
                         {
                             (menuData?.text != null && menuData?.link != null && menuData?.isEdit != true) ? `Name : ${menuData?.text}` :
                                 <input
@@ -314,7 +324,7 @@ const MenuRow = ({ data }) => {
                                 />
                         }
                     </div>
-                    <div className='col-md-5' style={{ margin: "auto 0", fontSize: "16px" }}>
+                    <div className='col-md-3' style={{ margin: "auto 0", fontSize: "16px" }}>
 
                         {
                             (menuData?.text != null && menuData?.link != null && menuData?.isEdit != true) ? `Link : ${menuData?.link}` :
@@ -329,6 +339,23 @@ const MenuRow = ({ data }) => {
                                 />
                         }
                     </div>
+
+                    <div className='col-md-3' style={{ margin: "auto 0", fontSize: "16px" }}>
+
+                        {
+                            (menuData?.icon != null && menuData?.icon != null && menuData?.isEdit != true) ? `Icon : ${menuData?.icon}` :
+                                <input
+                                    type="text"
+                                    id="icon"
+                                    name="icon"
+                                    className={`form-control ${errorsList.icon ? "is-invalid" : ""}`}
+                                    placeholder="Enter the icon"
+                                    value={menuState.icon || ""}
+                                    onChange={onChangeForm}
+                                />
+                        }
+                    </div>
+
                     <div className='col-md-2' style={{
                         display: "flex",
                         justifyContent: "space-between",
@@ -346,11 +373,11 @@ const MenuRow = ({ data }) => {
                                 {
                                     menuData.isEdit ?
                                         <IconButton color="primary" aria-label="add an alarm" style={{ backgroundColor: "#b3b3f1db" }}>
-                                            <CheckIcon onClick={() => handleUpdateMenu(menuData.id, menuData.text, menuData.link)} />
+                                            <CheckIcon onClick={() => handleUpdateMenu(menuData.id, menuData.text, menuData.link,menuData.icon)} />
                                         </IconButton>
                                         :
                                         <IconButton color="primary" aria-label="add an alarm" style={{ backgroundColor: "#b3b3f1db" }}>
-                                            <EditIcon onClick={() => handleEditMenu(menuData.id, menuData.text, menuData.link)} />
+                                            <EditIcon onClick={() => handleEditMenu(menuData.id, menuData.text, menuData.link,menuData.icon)} />
                                         </IconButton>
                                 }
 
@@ -366,7 +393,7 @@ const MenuRow = ({ data }) => {
                     </div>
 
                     {menuData?.submenu && <div className='p-3 mt-3' style={{ backgroundColor: "white", display: menuData.collapsed ? "block" : "none" }}>
-                        {menuData.submenu && <MenuRow data={menuData.submenu} />}
+                        {menuData && menuData.submenu.length > 0 && <MenuRow data={menuData.submenu} />}
                     </div>}
 
 

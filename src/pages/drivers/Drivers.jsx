@@ -22,6 +22,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import axios from 'axios';
 import keycloak from '../../keycloak/keycloak';
+import { getOrganizationRootSlice } from '../../slices/organizationSlice';
 
 const Drivers = () => {
 
@@ -53,6 +54,8 @@ const Drivers = () => {
   useEffect(() => {
     if (status === 'idle') {
       dispatch(getAllDriversSlice());
+      dispatch(getOrganizationRootSlice());
+
     }
   }, [status, dispatch]);
 

@@ -257,7 +257,8 @@ export const addTrackerSlice = createAsyncThunk('trackers/addTracker', async (tr
       brand: trackerState.brand,
       simSerialNumber: trackerState.simSerialNumber,
       simNumber: trackerState.simNumber,
-      status:trackerState.status
+      status:trackerState.status,
+      organization:trackerState.organization
     },{
       headers: { 'Authorization': `Bearer ${token}` }
     });

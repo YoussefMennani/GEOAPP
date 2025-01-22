@@ -45,6 +45,9 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
   const [langValues, setLangValues] = useState("");
   const [imagePreview, setImagePreview] = useState(null);  // Store the preview URL
 
+  const { organizationRoot } = useSelector((state) => state.organization);
+
+  
   // Handle generic field changes
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -75,7 +78,7 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
     // Validate fields
     const requiredFields = [
       "name",
-      "description"
+      "description","role"
     ];
 
     requiredFields.forEach((field) => {
@@ -183,6 +186,55 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
                 <small className="text-danger">{errors.description}</small>
               )}
             </div>
+
+
+            <div className="mb-3 col-md-12">
+              <label htmlFor="cityOfBirth" className="form-label">
+                Role
+              </label>
+              <select
+                id="role"
+                name="role"
+                className="form-select"
+                value={entityState.role || ""}
+                onChange={handleChange}
+              >
+                <option value="">Select Role</option>
+                <option value="SUPER_ADMIN">SUPER ADMIN</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="MANAGER">MANAGER</option>
+                <option value="AGENT">AGENT</option>
+
+              </select>
+
+              {errors.cityOfBirth && (
+                <small className="text-danger">{errors.cityOfBirth}</small>
+              )}
+            </div>
+
+            <div className="mb-3 col-md-12">
+              <label htmlFor="status" className="form-label">Organization</label>
+              <select
+                // value={entityState.brandVehicle} 
+                className={`form-control ${errors.organization ? "is-invalid" : ""}`}
+                // onChange={onChangeFormBrand} 
+                onChange={handleChange} value={entityState.organization}
+                name="organization" id="organization" >
+                <option value="">Select Organization</option>
+                {
+                  organizationRoot.map(org => {
+                    return (<option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>)
+                  })
+                }
+              </select>
+              {errors.organization && (
+                <div className="invalid-feedback">{errors.organization}</div>
+              )}
+            </div>
+
+
 
           </div>}
 

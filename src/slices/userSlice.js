@@ -143,6 +143,7 @@ const userSlice = createSlice({
     auth:{},
     userState: {},
     profile:{},
+    organization:{},
     usersList:[],
     avatar:"",
     status: 'idle', 
@@ -174,6 +175,7 @@ const userSlice = createSlice({
         console.log(action.payload)
         state.profile = action.payload.profile
         state.avatar = action.payload.avatar
+        state.organization = action.payload.organization
       })
       .addCase(getUserExtrasMe.rejected, (state, action) => {
         state.status = 'failed';

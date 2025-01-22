@@ -18,9 +18,10 @@ import { deleteOrganization } from '../../slices/organizationSlice';
 export default function OrganizationCard({ data }) {
 
     const dispatch = useDispatch(); 
-    const handleDeleteProfile = (idProfile) => {
-        dispatch(deleteOrganization(idProfile))
-    }
+
+    const handleDelete = (id) => {
+        dispatch(deleteOrganization(id));
+    };
 
     const navigate = useNavigate();
 
@@ -56,7 +57,7 @@ export default function OrganizationCard({ data }) {
                 <IconButton color="success" aria-label="add an alarm"  >
                     <AutoFixHighIcon />
                 </IconButton>
-                <IconButton color="warning" aria-label="add an alarm"  onClick={()=>handleDeleteProfile(data.id)} >
+                <IconButton color="warning" aria-label="add an alarm"  onClick={()=>handleDelete(data.id)} >
                     <DeleteIcon />
                 </IconButton>
 

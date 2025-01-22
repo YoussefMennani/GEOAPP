@@ -50,17 +50,17 @@ export const getAllVehiclesMapSlice = createAsyncThunk('map/getAllVehiclesSlice'
     const roles = state.user.userState.realm_access.roles;
     const organization = state.user.userState.organization;
     let res = "";
-    if (roles.includes("ADMIN")) {
+    // if (roles.includes("ADMIN")) {
        res = await axios.get(apiGateWay + "/api/v1/vehicles", {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-    } else {
-       res = await axios.get(apiGateWay + "/api/v1/vehicles/organization/"+organization, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+    // } else {
+    //    res = await axios.get(apiGateWay + "/api/v1/vehicles/organization/"+organization, {
+    //     headers: { 'Authorization': `Bearer ${token}` }
+    //   });
 
-    }
+    // }
 
    
     if (res.status === 200) {  // Checking for HTTP 200 status

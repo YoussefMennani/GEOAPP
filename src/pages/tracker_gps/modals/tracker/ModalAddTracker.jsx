@@ -58,6 +58,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
   const { listBrand } = useSelector((state) => state.trackers.brand);
   const { listModel } = useSelector((state) => state.trackers.model);
   const [modelSelector, setModelSelector] = useState([])
+  const { organizationRoot } = useSelector((state) => state.organization);
 
   const [isTouched, setisTouched] = useState(false)
 
@@ -68,6 +69,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
     simSerialNumber: "",
     simNumber: "",
     status: "",
+    organization:""
   });
 
 
@@ -85,7 +87,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
   }, [isOpenEditModal]);
 
   const onChangeFormBrand = (event) => {
-      console.log(entityState)
+    console.log(entityState)
     if (isTouched == false)
       setisTouched(true)
     const { name, value } = event.target;
@@ -314,8 +316,8 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
             </div>
           </div> */}
 
-          <div className="row g-2">
-            <div className="mb-3">
+          <div className="mb-3 row">
+            <div className="col-md-6">
               <label htmlFor="brand" className="form-label">Brand</label>
               <select value={entityState.brand} className={`form-control ${errorsList.brand ? "is-invalid" : ""}`} onChange={onChangeFormBrand} name="brand" id="brand" defaultValue="" aria-label="Default select example">
                 <option value="">Select brand</option>
@@ -329,10 +331,8 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
                 <div className="invalid-feedback">{errorsList.brand}</div>
               )}
             </div>
-          </div>
 
-          <div className="row g-2">
-            <div className="mb-3">
+            <div className="col-md-6">
               <label htmlFor="exampleFormControlSelect1" className="form-label">Model</label>
               <select value={entityState.model} className={`form-control ${errorsList.model ? "is-invalid" : ""}`} onChange={onChangeFormBrand} name="model" id="model" defaultValue="" >
                 <option value="">Select Model</option>
@@ -348,11 +348,11 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
             </div>
           </div>
 
-          <div className="row g-2">
-            <div className="mb-3">
+          <div className=" mb-3 row">
+            <div className="col-md-6">
               <label htmlFor="status" className="form-label">Status</label>
               <select value={entityState.status} className={`form-control ${errorsList.status ? "is-invalid" : ""}`} onChange={onChangeFormBrand} name="status" id="status" defaultValue="INACTIVE" >
-              <option value="">Select Status</option>
+                <option value="">Select Status</option>
                 <option value="INACTIVE">INACTIVE</option>
                 <option value="EN_PANNE">EN PANNE</option>
                 <option value="WORKING">WORKING</option>
@@ -362,11 +362,32 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
                 <div className="invalid-feedback">{errorsList.status}</div>
               )}
             </div>
+            <div className="mb-3 col-sm-6">
+              <label htmlFor="status" className="form-label">Organization</label>
+              <select
+                // value={entityState.brandVehicle} 
+                className={`form-control ${errorsList.organization ? "is-invalid" : ""}`}
+                // onChange={onChangeFormBrand} 
+                onChange={onChangeFormBrand} value={entityState.organization}
+                name="organization" id="organization" >
+                <option value="">Select Organization</option>
+                {
+                  organizationRoot.map(org => {
+                    return (<option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>)
+                  })
+                }
+              </select>
+              {errorsList.organization && (
+                <div className="invalid-feedback">{errorsList.organization}</div>
+              )}
+            </div>
           </div>
 
 
-          <div className="row">
-            <div className="col mb-3">
+          <div className="mb-3 row">
+            <div className="col-md-6">
               <label htmlFor="simSerialNumber" className="form-label">
                 Sim Serial Number <Badge type="label-primary" >{entityState?.simSerialNumber?.length || 0}</Badge>
               </label>
@@ -384,11 +405,8 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
               )}
             </div>
 
-          </div>
-
-
-          <div className="row">
-            <div className="col mb-3">
+       
+            <div className="col-md-6">
               <label htmlFor="simNumber" className="form-label">
                 Sim Number  <Badge type="label-primary" >{entityState.simNumber.length}</Badge>
               </label>
@@ -405,8 +423,8 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
                 <div className="invalid-feedback">{errorsList.simNumber}</div>
               )}
             </div>
-
           </div>
+
           {/* <div className="row">
             <div className="col mb-3">
               <label htmlFor="modelName" className="form-label">
@@ -460,7 +478,6 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
               onClick={onClickUpdateBrand}
             >
               <span className="bx bx-pencil me-2"></span>
-
               Update
             </button>
           ) : (
@@ -470,13 +487,8 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
               onClick={onClickSubmitBrand}
             >
               <span className="bx bx-layer-plus me-2"></span>
-
               Submit
             </button>
-
-
-
-
           )}
         </DialogActions>
 

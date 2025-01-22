@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModalMenu, handleExpandMenu, saveMenuSlice } from "../../../slices/menuSlice";
-import { closeModalAddOrganizationHeader, saveChnagesOrganization, saveChnagesTargetOrg, saveOrganizationSlice } from "../../../slices/organizationSlice";
+import { addOrganizationSlice, closeModalAddOrganizationHeader, saveChnagesOrganization, saveChnagesTargetOrg, saveOrganizationSlice } from "../../../slices/organizationSlice";
 
 
 const style = {
@@ -31,7 +31,7 @@ const ModalAddMenuHeader = () => {
   const [headerState, setHeaderState] = useState({
     header: "",
   });
-  const { isOpenModal, isOpenModalAddHeader, organizationTarget } = useSelector((state) => state.organization);
+  const { isOpenModal, isOpenModalAddHeader, targetEntity } = useSelector((state) => state.organization);
 
 
   const [errorsList, setErrorsList] = useState({
@@ -66,18 +66,11 @@ const ModalAddMenuHeader = () => {
     if (headerState.header != "") {
 
       const newMenu = {
-        id:organizationTarget.id,
-        name: organizationTarget.name,
-        data: [
-          ...organizationTarget.data, // Spread the existing menuList array
-          {
-            header: headerState.header,
-            items: []
-          }
-        ]
+        
+        name: headerState.header,
+        parentId:targetEntity.id
       }
-      dispatch(saveOrganizationSlice(newMenu))
-      dispatch(saveChnagesTargetOrg(newMenu))
+      dispatch(addOrganizationSlice(newMenu))
 
       
       handleCloseModal()

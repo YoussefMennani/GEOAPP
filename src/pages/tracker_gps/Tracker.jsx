@@ -9,11 +9,13 @@ import Badge from '../../components/atoms/Badges';
 import ModalAddTracker from './modals/tracker/ModalAddTracker';
 import ModalConfirmDeletion from './modals/tracker/ModalConfirmDeletion';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { getOrganizationRootSlice } from '../../slices/organizationSlice';
 
 const Tracker = () => {
 
   const dispatch = useDispatch();
   const { listTrackers, status } = useSelector((state) => state.trackers);
+
 
   const [entityState, setEntityState] = useState({
     id: "",
@@ -22,7 +24,8 @@ const Tracker = () => {
     brand: "",
     simSerialNumber: "",
     simNumber: "",
-    status:""
+    status:"",
+    organization:""
   });
 
   const [isEdit, setIsEdit] = useState(false);
@@ -33,6 +36,7 @@ const Tracker = () => {
       dispatch(getAllTrackersSlice());
       dispatch(getAllBrandsSlice());
       dispatch(getAllModelsSlice());
+      dispatch(getOrganizationRootSlice());
 
     }
   }, [status, dispatch]);
@@ -134,7 +138,12 @@ const Tracker = () => {
         header: 'Brand',
         size: 100,
       },
-      
+            
+      {
+        accessorKey: 'organization.name',
+        header: 'organization',
+        size: 100,
+      },
       {
         accessorKey: 'model.modelName',
         header: 'Model',

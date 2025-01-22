@@ -17,7 +17,7 @@ export const addOrganizationSlice = createAsyncThunk('organization/addOrganizati
     const token = state.user.auth.token;
     console.log(data)
 
-    const res = await axios.post(gateWayUrl + "/api/organization", {
+    const res = await axios.post(gateWayUrl + "/api/organizations", {
       ...data
     },
      {
@@ -65,6 +65,30 @@ export const saveOrganizationSlice = createAsyncThunk('organization/saveOrganiza
 });
 
 
+export const getOrganizationRootSlice = createAsyncThunk('organization/getOrganizationRoot', async (_, { getState }) => {
+
+  try {
+    const state = getState();
+    const token = state.user.auth.token;
+
+    const res = await axios.get(gateWayUrl + "/api/organizations/roots",{
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 200) {  // Checking for HTTP 200 status
+      //console.log(res.data);
+      toast.success(res.data.message)
+      return res.data;  // Return the data if needed for further use
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (error) {
+    console.error("Error fetching brands:", error.message);
+    throw error;  // Rethrow error to handle in the async thunk
+  }
+});
+
+
 export const getOrganizationSlice = createAsyncThunk('organization/getOrganization', async (_, { getState }) => {
 
   try {
@@ -94,7 +118,7 @@ export const getOrganizationByIdSlice = createAsyncThunk('organization/getOrgani
     const state = getState();
     const token = state.user.auth.token;
 
-    const res = await axios.get(gateWayUrl + "/api/organization/"+idOrg,{
+    const res = await axios.get(gateWayUrl + "/api/organizations/tree/"+idOrg,{
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -144,7 +168,7 @@ export const deleteOrganization = createAsyncThunk('organization/deleteById', as
     const state = getState();
     const token = state.user.auth.token;
 
-    const res = await axios.delete(gateWayUrl + "/api/organization/"+organizationId,{
+    const res = await axios.delete(gateWayUrl + "/api/organizations/"+organizationId,{
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -175,11 +199,19 @@ const organizationSlice = createSlice({
     isOpenModalAddHeader:false,
     organizationList : [],
     organizationTarget:{},
+    organizationRoot:[],
+    targetEntity:{},
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
   },
 
   reducers: {
+    //------------------------------------------------------------------------------------
+    setTargetEntity: (state, action) => {
+      state.targetEntity = action.payload
+    },
+    //------------------------------------------------------------------------------------
+
     saveChnagesOrganization: (state, action) => {
       state.organizationList = action.payload
     },
@@ -208,6 +240,41 @@ const organizationSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+    //------------------------------------------------------------------------------
+
+    .addCase(getOrganizationRootSlice.pending, (state) => {
+      state.status = 'loading';
+    })
+    .addCase(getOrganizationRootSlice.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.isOpenModal = false;
+      console.log(action.payload)
+      state.organizationRoot = action.payload
+    })
+
+    .addCase(getOrganizationRootSlice.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.error.message;
+      toast.error("Something went wrong. If the problem persists, please contact support.");
+    })
+    .addCase(deleteOrganization.pending, (state) => {
+      state.status = 'loading';
+    })
+    .addCase(deleteOrganization.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.isOpenModal = false;
+      // console.log(action.payload)
+      toast.success("Organization deleted successfully")
+
+      // state.organizationList = state.organizationList.filter((item)=>item.id != action.payload)
+    })
+
+    .addCase(deleteOrganization.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.error.message;
+      toast.error("Something went wrong. If the problem persists, please contact support.");
+    })
+    //------------------------------------------------------------------------------
     .addCase(addOrganizationSlice.pending, (state) => {
       state.status = 'loading';
     })
@@ -224,6 +291,7 @@ const organizationSlice = createSlice({
       state.error = action.error.message;
       toast.error("Something went wrong. If the problem persists, please contact support.");
     })
+
     .addCase(getOrganizationSlice.pending, (state) => {
       state.status = 'loading';
     })
@@ -304,26 +372,12 @@ const organizationSlice = createSlice({
       state.error = action.error.message;
       toast.error("Something went wrong. If the problem persists, please contact support.");
     })
-    .addCase(deleteOrganization.pending, (state) => {
-      state.status = 'loading';
-    })
-    .addCase(deleteOrganization.fulfilled, (state, action) => {
-      state.status = 'succeeded';
-      state.isOpenModal = false;
-      console.log(action.payload)
-      state.organizationList = state.organizationList.filter((item)=>item.id != action.payload)
-    })
 
-    .addCase(deleteOrganization.rejected, (state, action) => {
-      state.status = 'failed';
-      state.error = action.error.message;
-      toast.error("Something went wrong. If the problem persists, please contact support.");
-    })
   },
   
 });
 
 export const {
-  saveChnagesOrganization,openModalAddOrganization,saveChnagesTargetOrg,closeModalAddOrganization,updateOrganization,openModalAddOrganizationHeader, closeModalAddOrganizationHeader
+  saveChnagesOrganization,openModalAddOrganization,saveChnagesTargetOrg,setTargetEntity,closeModalAddOrganization,updateOrganization,openModalAddOrganizationHeader, closeModalAddOrganizationHeader
 } = organizationSlice.actions;
 export default organizationSlice.reducer;

@@ -35,6 +35,8 @@ const style = {
 const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
   const dispatch = useDispatch();
   const { isOpenEditModal } = useSelector((state) => state.drivers);
+  const { organizationRoot } = useSelector((state) => state.organization);
+
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
   const [imagePreview, setImagePreview] = useState(null);  // Store the preview URL
@@ -509,8 +511,7 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
                 onChange={handleChange}
               >
                 <option value="">Select Organization</option>
-                <option value="particular">Particular</option>
-                {
+                {/* {
 
                   organizations.map(org => {
                     if (keycloak.tokenParsed.realm_access.roles.includes("ADMIN") || org.name == keycloak.tokenParsed.organization) {
@@ -518,6 +519,13 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
                         {org.name}
                       </option>)
                     }
+                  })
+                } */}
+                {
+                  organizationRoot.map(org => {
+                    return (<option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>)
                   })
                 }
                 {/* <option value="">Sale</option> */}

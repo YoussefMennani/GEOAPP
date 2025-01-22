@@ -31,6 +31,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import { getOrganizationRootSlice } from '../../slices/organizationSlice';
 
 
 const Vehicles = () => {
@@ -38,6 +39,7 @@ const Vehicles = () => {
   const dispatch = useDispatch();
   // const { listTrackers } = useSelector((state) => state.trackers);
   const { listVehicles, status } = useSelector((state) => state.vehicles);
+
   const [entityState, setEntityState] = useState({
     id: "",
     licensePlate: "",
@@ -66,7 +68,7 @@ const Vehicles = () => {
       dispatch(getAllBrandsSlice());
       dispatch(getAllDriversSlice(keycloak.token))
       dispatch(getAllModelsSlice());
-
+      dispatch(getOrganizationRootSlice());
     }
   }, [status, dispatch]);
 
@@ -116,7 +118,7 @@ const Vehicles = () => {
     setDriverTarget(driverData)
     setVehicleTarget(vehicleId)
     dispatch(openModalShowDriverInfo())
-
+    
   }
   const clearState = () => {
     setEntityState({
