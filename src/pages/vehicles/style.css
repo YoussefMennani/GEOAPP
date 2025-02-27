@@ -1,0 +1,8 @@
+/* Custom CSS for hover effect */
+.rule-hover-effect {
+    transition: background-color 0.3s ease; /* Smooth transition */
+  }
+  
+  .rule-hover-effect:hover {
+    background-color: #e0e0e0; /* Darken the background color on hover */
+  }

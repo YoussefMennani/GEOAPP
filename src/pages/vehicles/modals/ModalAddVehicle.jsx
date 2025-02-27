@@ -15,6 +15,7 @@ import brands from "../data/brands";
 import models from "../data/models";
 import organizations from "../data/org";
 import keycloak from "../../../keycloak/keycloak";
+import { getChildOrganizationSlice } from "../../../slices/organizationSlice";
 
 const style = {
   position: 'absolute',
@@ -51,7 +52,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
   const { listBrand } = useSelector((state) => state.trackers.brand);
   // const { listModel } = useSelector((state) => state.trackers.model);
   const { listTrackers, status } = useSelector((state) => state.trackers);
-  const { organizationRoot } = useSelector((state) => state.organization);
+  const { organizationRoot,organizationListChild } = useSelector((state) => state.organization);
 
 
   const [modelSelector, setModelSelector] = useState(models)
@@ -70,8 +71,19 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
     // currentDriver: "",
     // lastPosition: "",
     tracker: "",
-    organization: ""
+    organization: "",
+    vehicleType  :""
   });
+
+  
+  useEffect(() => {
+
+    // dispatch(getOrganizationRootSlice());
+    dispatch(getChildOrganizationSlice());
+
+
+  }, []);
+
 
 
   useEffect(() => {
@@ -124,7 +136,8 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
       fuelType: "",
       status: "",
       tracker: "",
-      organization: ""
+      organization: "",
+      vehicleType:""
     };
 
     // License Plate
@@ -189,6 +202,11 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
     // Organization
     if (!entityState.organization) {
       errors.organization = "Organization is required";
+      isValid = false;
+    }
+
+    if (!entityState.vehicleType) {
+      errors.vehicleType = "VehicleType is required";
       isValid = false;
     }
 
@@ -285,6 +303,15 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
     }));
 
   }
+
+  const vehicleTypes = [
+    { value: "car", label: "Car" },
+    { value: "truck", label: "Truck" },
+    { value: "moto", label: "Motorcycle" },
+    // { value: "livingBeing", label: "livingBeing" },
+    { value: "ship", label: "Ship" },
+    { value: "other", label: "Other" },
+  ];
 
 
 
@@ -495,7 +522,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
                 name="organization" id="organization" >
                 <option value="">Select Organization</option>
                 {
-                  organizationRoot.map(org => {
+                  organizationListChild.map(org => {
                     return (<option key={org.id} value={org.id}>
                       {org.name}
                     </option>)
@@ -507,7 +534,7 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
               )}
             </div>
 
-            <div className="mb-3 col-sm-6">
+            <div className="col-sm-6">
               <label htmlFor="status" className="form-label">Photo</label>
 
               <div className="button-wrapper">
@@ -533,7 +560,26 @@ const ModalAddVehicle = ({ setEntityState, entityState, isEdit }) => {
             </div>
           </div>
           <div className="row g-2">
-
+            <div className="mb-3 col-sm-6">
+              <label htmlFor="vehicle-type" className="form-label">Vehicle Type</label>
+              <select
+                value={entityState.vehicleType}
+                className={`form-control ${errorsList.vehicleType ? "is-invalid" : ""}`}
+                onChange={onChangeFormBrand}
+                name="vehicleType"
+                id="vehicle-type"
+              >
+                <option value="">Select Vehicle Type</option>
+                {vehicleTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+              {errorsList.vehicleType && (
+                <div className="invalid-feedback">{errorsList.vehicleType}</div>
+              )}
+            </div>
           </div>
 
 

@@ -28,7 +28,7 @@ export const getUserExtrasMe = createAsyncThunk('user/getProfile', async (token)
   }
 });
 
-export const getAllUsers = createAsyncThunk('user/getAllUsers', async (_, { getState }) => {
+export const getAllUsers = createAsyncThunk('user/getAllUsersByProfile', async (_, { getState }) => {
 
   try {
     const state = getState();
@@ -175,7 +175,8 @@ const userSlice = createSlice({
         console.log(action.payload)
         state.profile = action.payload.profile
         state.avatar = action.payload.avatar
-        state.organization = action.payload.organization
+        state.organization = action.payload.organization,
+        state.isAuthorizedUser = action.payload.authorizedUser
       })
       .addCase(getUserExtrasMe.rejected, (state, action) => {
         state.status = 'failed';

@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteOrganization, openModalAddOrganizationHeader, saveChnagesTargetOrg, setTargetEntity } from '../../slices/organizationSlice';
+import { deleteOrganization, getOrganizationByIdSlice, openModalAddOrganizationHeader, saveChnagesTargetOrg, setTargetEntity } from '../../slices/organizationSlice';
 import { toast } from 'react-toastify';
 
 const OrganizationRow = ({ data }) => {
@@ -20,21 +20,21 @@ const OrganizationRow = ({ data }) => {
         setEditState({ id, name });
     };
 
-    // Save changes after editing
-    const handleSaveEdit = (id) => {
-        if (!editState.name) {
-            toast.error('Name is required');
-            return;
-        }
+    // // Save changes after editing
+    // const handleSaveEdit = (id) => {
+    //     if (!editState.name) {
+    //         toast.error('Name is required');
+    //         return;
+    //     }
 
-        const updatedOrganization = {
-            ...organizationTarget,
-            children: updateOrganizationName(organizationTarget.children, id, editState.name),
-        };
+    //     const updatedOrganization = {
+    //         ...organizationTarget,
+    //         children: updateOrganizationName(organizationTarget.children, id, editState.name),
+    //     };
 
-        dispatch(saveChnagesTargetOrg(updatedOrganization));
-        setEditState({ id: null, name: '' });
-    };
+    //     dispatch(saveChnagesTargetOrg(updatedOrganization));
+    //     setEditState({ id: null, name: '' });
+    // };
 
     // Helper function to recursively update organization name
     const updateOrganizationName = (children, id, newName) => {
@@ -52,8 +52,10 @@ const OrganizationRow = ({ data }) => {
     };
 
     // Delete an organization
-    const handleDelete = (id) => {
-        dispatch(deleteOrganization(id));
+    const handleDelete = async (id) => {
+        await dispatch(deleteOrganization(id)).unwrap();
+        dispatch(getOrganizationByIdSlice(organizationTarget.id));
+
     };
 
 

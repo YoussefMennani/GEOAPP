@@ -20,7 +20,7 @@ import { addDriverSlice, closeModalEditDriver } from "../../../slices/driverSlic
 import DeleteIcon from '@mui/icons-material/Delete';
 import organizations from "../../vehicles/data/org";
 import keycloak from "../../../keycloak/keycloak";
-import { closeModalAddProfilMenu, saveProfileSlice } from "../../../slices/profilSlice";
+import { closeModalAddProfilMenu, closeModalEditProfilMenu, getMenuProfilSlice, handleExpandMenu, saveProfileSlice, updateProfileSlice } from "../../../slices/profilSlice";
 import MenuPermissions from "./MenuPermissions";
 
 const style = {
@@ -40,13 +40,22 @@ const style = {
 
 const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
   const dispatch = useDispatch();
-  const { isOpenAddModal,menuList } = useSelector((state) => state.profil);
+  const { isOpenAddModal,menuList,isOpenEditModal } = useSelector((state) => state.profil);
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);  // Store the preview URL
 
   const { organizationRoot } = useSelector((state) => state.organization);
 
+  
+  useEffect(() => {
+    console.log(" status : ",isOpenEditModal)
+    if(isOpenEditModal){
+      dispatch(handleExpandMenu(entityState.menu))
+    }else{
+    dispatch(getMenuProfilSlice("menu1"));
+    }
+
+  }, [isOpenEditModal]);
   
   // Handle generic field changes
   const handleChange = (event) => {
@@ -98,7 +107,7 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
    
 
       if (isEdit) {
-        // dispatch(updateVehicleSlice(payload));
+        dispatch(updateProfileSlice({...entityState,menu:menuList}));
       } else {
         dispatch(saveProfileSlice({...entityState,menu:menuList}));
       }
@@ -109,7 +118,9 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
 
   // Close modal
   const handleCloseEditModal = () => {
+    dispatch(closeModalEditProfilMenu())
     dispatch(closeModalAddProfilMenu());
+    setCurrentPage(1)
   };
 
 
@@ -200,7 +211,7 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
                 onChange={handleChange}
               >
                 <option value="">Select Role</option>
-                <option value="SUPER_ADMIN">SUPER ADMIN</option>
+                {/* <option value="SUPER_ADMIN">SUPER ADMIN</option> */}
                 <option value="ADMIN">ADMIN</option>
                 <option value="MANAGER">MANAGER</option>
                 <option value="AGENT">AGENT</option>
@@ -278,7 +289,7 @@ const ModalAddProfile = ({ setEntityState, entityState, isEdit }) => {
             className="btn btn-primary"
             onClick={handleSubmit}
           >
-            {isEdit ? "Update" : "Submit"}
+            {isOpenEditModal ? "Update" : "Submit"}
           </button> }
         </DialogActions>
       </Box>

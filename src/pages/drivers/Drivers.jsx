@@ -173,7 +173,7 @@ const Drivers = () => {
     },
 
       {
-        accessorKey: 'organization',
+        accessorKey: 'organization.name',
         header: 'Organization',
         size: 100,
       },

@@ -10,18 +10,40 @@ import { IconButton } from '@mui/material';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import { deleteProfile } from '../../slices/profilSlice';
+import { deleteProfile, openModaEditProfillMenu } from '../../slices/profilSlice';
 import { useDispatch } from 'react-redux';
 
-export default function ProfileCard({ data }) {
+export default function ProfileCard({ data,onClickUpdateModel }) {
 
     const dispatch = useDispatch(); 
     const handleDeleteProfile = (idProfile) => {
         dispatch(deleteProfile(idProfile))
     }
 
+    const handleUpdateCard = () =>{
+
+        dispatch(openModaEditProfillMenu())
+        onClickUpdateModel(
+            data.id,
+            data.name,
+            data.description,
+            data.role,
+            data.menu,
+            data.organization
+          );
+
+    }
     return (
-        <Card sx={{ margin:"5px",width:"280px"}}>
+<Card
+    sx={{
+        margin: "30px",
+        width: "280px",
+        transition: "transform 0.3s ease-in-out",
+        "&:hover": {
+            transform: "translateY(-10px)",
+        },
+    }}
+>
             <CardActionArea>
                 <CardMedia
                     component="img"
@@ -43,7 +65,7 @@ export default function ProfileCard({ data }) {
                 <IconButton color="primary" aria-label="add an alarm"  >
                     <RemoveRedEyeIcon />
                 </IconButton>
-                <IconButton color="success" aria-label="add an alarm"  >
+                <IconButton color="success" aria-label="add an alarm"  onClick={handleUpdateCard} >
                     <AutoFixHighIcon />
                 </IconButton>
                 <IconButton color="warning" aria-label="add an alarm"  onClick={()=>handleDeleteProfile(data.id)} >

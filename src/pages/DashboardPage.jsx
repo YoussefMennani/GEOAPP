@@ -20,11 +20,11 @@ export const DashboardPage = () => {
 
     useEffect(() => {
 
-        dispatch(getAllTrackersSlice());
-        dispatch(getAllVehiclesSlice())
-        // dispatch(getAllBrandsSlice());
-        dispatch(getAllDriversSlice())
-        // dispatch(getAllModelsSlice());
+        // dispatch(getAllTrackersSlice());
+        // dispatch(getAllVehiclesSlice())
+        // // dispatch(getAllBrandsSlice());
+        // dispatch(getAllDriversSlice())
+        // // dispatch(getAllModelsSlice());
     }, [dispatch]);
 
 

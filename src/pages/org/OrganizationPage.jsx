@@ -5,6 +5,7 @@ import { openModalDeleteDriver } from '../../slices/driverSlice';
 import OrganizationCard from './OrganizationCard';
 import { getOrganizationRootSlice, openModalAddOrganization, openModalAddOrganizationHeader, setTargetEntity } from '../../slices/organizationSlice';
 import ModalAddMenuHeader from './modal/ModalAddMenuHeader';
+import ModalOrgChart from './modal/ModalOrgChart';
 
 const OrganizationPage = () => {
 
@@ -88,6 +89,7 @@ const OrganizationPage = () => {
       </div>
       {/* <MaterialReactTable columns={columns} data={listDrivers} state={{ isLoading: status != "succeeded" ? true : false }} />; */}
       <ModalAddMenuHeader/>
+      <ModalOrgChart/>
 
     </>
   );

@@ -10,7 +10,6 @@ const gateWayUrl = "http://localhost:8093";
 
 
 
-
 export const saveProfileSlice = createAsyncThunk('profil/saveProfileSlice', async (profile, { getState }) => {
 
   try {
@@ -37,6 +36,32 @@ export const saveProfileSlice = createAsyncThunk('profil/saveProfileSlice', asyn
   }
 });
 
+
+export const updateProfileSlice = createAsyncThunk('profil/updateProfileSlice', async (profile, { getState }) => {
+
+  try {
+    const state = getState();
+    const token = state.user.auth.token;
+
+    const res = await axios.put(gateWayUrl + "/api/userextras/profile", {
+      ...profile
+    },
+     {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 200) {  // Checking for HTTP 200 status
+      //console.log(res.data);
+      toast.success(res.data.message)
+      return res.data;  // Return the data if needed for further use
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (error) {
+    console.error("Error fetching brands:", error.message);
+    throw error;  // Rethrow error to handle in the async thunk
+  }
+});
 
 export const getMenuProfilSlice = createAsyncThunk('profil/getMenuProfile', async (menuName, { getState }) => {
 
@@ -117,11 +142,9 @@ const profilSlice = createSlice({
   initialState: {
     // listTrackers: [], 
     isOpenAddModal:false,
-    menuList : {
-    },
-    profilesList:[]
-    ,
-
+    isOpenEditModal:false,
+    menuList : {},
+    profilesList:[],
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
   },
@@ -136,6 +159,13 @@ const profilSlice = createSlice({
     closeModalAddProfilMenu: (state, action) => {
       console.log("sads")
       state.isOpenAddModal = false;
+    },
+    openModaEditProfillMenu: (state, action) => {
+      state.isOpenEditModal = true;
+    },
+    closeModalEditProfilMenu: (state, action) => {
+      console.log("sads")
+      state.isOpenEditModal = false;
     }
   },
   extraReducers: (builder) => {
@@ -153,6 +183,46 @@ const profilSlice = createSlice({
     })
 
     .addCase(saveProfileSlice.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.error.message;
+      toast.error("Something went wrong. If the problem persists, please contact support.");
+    })
+    .addCase(updateProfileSlice.pending, (state) => {
+      state.status = 'loading';
+    })
+    .addCase(updateProfileSlice.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.isOpenAddModal = false;
+    
+      console.log('Update Profile Payload:', action.payload);
+    
+      // Check if the payload is valid
+      if (!action.payload || !action.payload.id) {
+        console.error('Invalid payload received:', action.payload);
+        toast.error('Failed to update profile: Invalid data received');
+        return;
+      }
+    
+      // Find the index of the profile to update
+      const profileIndex = state.profilesList.findIndex((item) => item.id === action.payload.id);
+    
+      // If the profile is found, update it immutably
+      if (profileIndex !== -1) {
+        state.profilesList = [
+          ...state.profilesList.slice(0, profileIndex), // Profiles before the updated one
+          action.payload, // Updated profile
+          ...state.profilesList.slice(profileIndex + 1), // Profiles after the updated one
+        ];
+      } else {
+        console.error('Profile not found in the list:', action.payload.id);
+        toast.error('Failed to update profile: Profile not found');
+        return;
+      }
+    
+      toast.success('Profile updated successfully');
+    })
+
+    .addCase(updateProfileSlice.rejected, (state, action) => {
       state.status = 'failed';
       state.error = action.error.message;
       toast.error("Something went wrong. If the problem persists, please contact support.");
@@ -208,6 +278,6 @@ const profilSlice = createSlice({
 });
 
 export const {
-  handleExpandMenu,openModaAddProfillMenu,closeModalAddProfilMenu
+  handleExpandMenu,openModaAddProfillMenu,closeModalAddProfilMenu,openModaEditProfillMenu,closeModalEditProfilMenu
 } = profilSlice.actions;
 export default profilSlice.reducer;

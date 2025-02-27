@@ -32,7 +32,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import { getOrganizationRootSlice } from '../../slices/organizationSlice';
-
+import AlignHorizontalLeftIcon from '@mui/icons-material/AlignHorizontalLeft';
 
 const Vehicles = () => {
 
@@ -53,7 +53,7 @@ const Vehicles = () => {
     // lastPosition:"",
     tracker: "",
     organization: "",
-    imgPath:""
+    imgPath: ""
   });
 
   const [driverTarget, setDriverTarget] = useState({})
@@ -118,7 +118,7 @@ const Vehicles = () => {
     setDriverTarget(driverData)
     setVehicleTarget(vehicleId)
     dispatch(openModalShowDriverInfo())
-    
+
   }
   const clearState = () => {
     setEntityState({
@@ -192,7 +192,7 @@ const Vehicles = () => {
         size: 150,
       },
       {
-        accessorKey: 'organization',
+        accessorKey: 'organization.name',
         header: 'organization',
         size: 150,
       },
@@ -290,7 +290,7 @@ const Vehicles = () => {
   );
 
 
-  const onClickDeleteModel = (id,licensePlate)=>{
+  const onClickDeleteModel = (id, licensePlate) => {
 
     setEntityState(prevState => ({
       ...prevState,
@@ -328,32 +328,32 @@ const Vehicles = () => {
           <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             <nav aria-label="main mailbox folders">
               <List>
-                
-            {
-              row?.original?.currentDriver != null ?
-                <ListItem disablePadding  onClick={() => onClickShowDriverInfo(row?.original?.currentDriver, row?.original?.id)} >
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <AccountCircleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Driver" />
-                  </ListItemButton>
-                </ListItem> :
-                 <ListItem disablePadding onClick={() => onClickAssignVlModel(row.original.id, row.original.licensePlate)} >
-                 <ListItemButton>
-                   <ListItemIcon>
-                     <NoAccountsIcon/>
-                   </ListItemIcon>
-                   <ListItemText primary="Assign Driver" />
-                 </ListItemButton>
-               </ListItem> 
-        }
-                <ListItem disablePadding  onClick={() => {
-                console.log("updating brand ....")
-                onClickUpdateModel(row.original.id, row.original.licensePlate, row.original.modelVehicle, row.original.brandVehicle, row.original.year,
-                  row.original.color, row.original.fuelType, row.original.status, row.original.tracker, row.original.organization);
 
-              }}>
+                {
+                  row?.original?.currentDriver != null ?
+                    <ListItem disablePadding onClick={() => onClickShowDriverInfo(row?.original?.currentDriver, row?.original?.id)} >
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <AccountCircleIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Driver" />
+                      </ListItemButton>
+                    </ListItem> :
+                    <ListItem disablePadding onClick={() => onClickAssignVlModel(row.original.id, row.original.licensePlate)} >
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <NoAccountsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Assign Driver" />
+                      </ListItemButton>
+                    </ListItem>
+                }
+                <ListItem disablePadding onClick={() => {
+                  console.log("updating brand ....")
+                  onClickUpdateModel(row.original.id, row.original.licensePlate, row.original.modelVehicle, row.original.brandVehicle, row.original.year,
+                    row.original.color, row.original.fuelType, row.original.status, row.original.tracker, row.original.organization);
+
+                }}>
                   <ListItemButton>
                     <ListItemIcon>
                       <EditIcon />
@@ -364,12 +364,19 @@ const Vehicles = () => {
                 <ListItem disablePadding onClick={() => onClickDeleteModel(row.original.id, row.original.licensePlate)} >
                   <ListItemButton>
                     <ListItemIcon>
-                      <DeleteIcon/>
+                      <DeleteIcon />
                     </ListItemIcon>
                     <ListItemText primary="Delete" />
                   </ListItemButton>
                 </ListItem>
-
+                <ListItem disablePadding onClick={() => onClickDeleteModel(row.original.id, row.original.licensePlate)} >
+                  <ListItemButton>
+                    <ListItemIcon>
+                      <AlignHorizontalLeftIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="rules" />
+                  </ListItemButton>
+                </ListItem>
               </List>
             </nav>
           </Box>

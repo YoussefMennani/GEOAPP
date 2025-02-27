@@ -6,7 +6,7 @@ import Notification from './Notification';
 const Navbar = () => {
   const dispatch = useDispatch();
   const { keycloak } = useKeycloak();
-  const {userState} = useSelector((state)=>state.user)
+  const {userState,organization,profile} = useSelector((state)=>state.user)
 
   const { mapSettings } = useSelector((state) => state.map)
 
@@ -101,8 +101,8 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="flex-grow-1">
-                      <span className="fw-medium d-block">{userState?.email ? userState.email : "UNKNOWN" }</span>
-                      <small className="text-muted">Admin [{userState?.organization ? userState.organization : "UNKNOWN" }]</small>
+                      <span className="fw-medium d-block">{userState?.preferred_username ? userState.preferred_username : "UNKNOWN" }</span>
+                      <small className="text-muted"> { profile && profile.role}  {profile.role =="SUPER_ADMIN" ? "" : "["+(organization?.name ? organization.name : "UNKNOWN")+ "]" } </small>
                     </div>
                   </div>
                 </a>

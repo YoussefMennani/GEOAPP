@@ -52,7 +52,7 @@ const TableDriver = ({ vehicleId }) => {
                 ),
             },
             {
-                accessorKey: 'organization',
+                accessorKey: 'organization.name',
                 header: 'Organization',
                 size: 100,
             },

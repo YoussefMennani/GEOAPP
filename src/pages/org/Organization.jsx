@@ -63,10 +63,17 @@ const Organization = () => {
   };
 
   // Delete an organization
-  const handleDelete = (id) => {
-    dispatch(deleteOrganization(id));
-};
-
+  const handleDelete = async (id) => {
+    try {
+      const deleteAction = await dispatch(deleteOrganization(id)); 
+      if (deleteOrganization.fulfilled.match(deleteAction)) {
+        dispatch(getOrganizationByIdSlice(organizationData.id));
+      }
+    } catch (error) {
+      console.error("Error deleting organization:", error);
+    }
+  };
+  
   // Helper function to recursively delete a child
   const deleteChildFromOrganization = (children, id) => {
     return children
@@ -137,6 +144,7 @@ const Organization = () => {
           >
             <div className="row px-2">
               <div className="col-md-2">
+                
                 <IconButton
                   color="primary"
                   aria-label="add an alarm"
@@ -178,7 +186,7 @@ const Organization = () => {
           </div>
         ))}
 
-      <ModalAddMenuHeader/>
+      <ModalAddMenuHeader idOrg = {organizationData?.id}/>
     </>
   );
 };

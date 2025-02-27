@@ -10,6 +10,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import Badge from "../../../../components/atoms/Badges";
+import { getChildOrganizationSlice } from "../../../../slices/organizationSlice";
+
 
 const style = {
   position: 'absolute',
@@ -58,7 +60,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
   const { listBrand } = useSelector((state) => state.trackers.brand);
   const { listModel } = useSelector((state) => state.trackers.model);
   const [modelSelector, setModelSelector] = useState([])
-  const { organizationRoot } = useSelector((state) => state.organization);
+  const { organizationRoot,organizationListChild } = useSelector((state) => state.organization);
 
   const [isTouched, setisTouched] = useState(false)
 
@@ -74,10 +76,20 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
 
 
   useEffect(() => {
+
+    // dispatch(getOrganizationRootSlice());
+    dispatch(getChildOrganizationSlice());
+
+
+  }, []);
+  
+  useEffect(() => {
     const newListModel = listModel.filter((model) => model.brand.id == entityState.brand)
     setModelSelector(newListModel)
 
   }, [entityState.brand])
+
+
 
 
   useEffect(() => {
@@ -233,6 +245,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
   // };
 
 
+
   return (
 
     <Modal
@@ -372,7 +385,7 @@ const ModalAddTracker = ({ setEntityState, entityState, isEdit }) => {
                 name="organization" id="organization" >
                 <option value="">Select Organization</option>
                 {
-                  organizationRoot.map(org => {
+                  organizationListChild.map(org => {
                     return (<option key={org.id} value={org.id}>
                       {org.name}
                     </option>)

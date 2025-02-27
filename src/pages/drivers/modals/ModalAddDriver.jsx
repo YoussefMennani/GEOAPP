@@ -19,6 +19,7 @@ import { addDriverSlice, closeModalEditDriver } from "../../../slices/driverSlic
 import DeleteIcon from '@mui/icons-material/Delete';
 import organizations from "../../vehicles/data/org";
 import keycloak from "../../../keycloak/keycloak";
+import { getChildOrganizationSlice } from "../../../slices/organizationSlice";
 
 const style = {
   position: "absolute",
@@ -35,7 +36,7 @@ const style = {
 const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
   const dispatch = useDispatch();
   const { isOpenEditModal } = useSelector((state) => state.drivers);
-  const { organizationRoot } = useSelector((state) => state.organization);
+  const { organizationRoot,organizationListChild } = useSelector((state) => state.organization);
 
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
@@ -57,6 +58,13 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
     }));
   };
 
+  useEffect(() => {
+
+    // dispatch(getOrganizationRootSlice());
+    dispatch(getChildOrganizationSlice());
+
+
+  }, []);
 
   // const handleImageChange = (event) => {
   //   const file = event.target.files[0]; // Get the selected file
@@ -522,7 +530,7 @@ const ModalAddDriver = ({ setEntityState, entityState, isEdit }) => {
                   })
                 } */}
                 {
-                  organizationRoot.map(org => {
+                  organizationListChild.map(org => {
                     return (<option key={org.id} value={org.id}>
                       {org.name}
                     </option>)

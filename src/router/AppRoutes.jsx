@@ -62,12 +62,17 @@ import Profils from "../pages/profils/Profils";
 import Menu from "../pages/organization/Menu";
 import Organization from "../pages/org/Organization";
 import OrganizationPage from "../pages/org/OrganizationPage";
+  import UnauthorizedPage from "../pages/authentication/UnauthorizedPage";
+import ProtectedRoute from "./ProtectedRoute";
+import OrgChartOrganization from "../pages/org/OrgChartOrganization";
+import {  VehicleRules } from "../pages/vehicles/VehicleRules";
+import SubscriptionPlans from "../pages/subscriptions/SubscriptionPlans";
 
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<DashboardPage />} />
+      <Route path="/" element={<ProtectedRoute component={DashboardPage} />} />
 
       <Route path="/layout/without-menu" element={<WithoutMenuPage />} />
       <Route path="/layout/without-navbar" element={<WithoutNavbarPage />} />
@@ -131,13 +136,14 @@ const AppRoutes = () => {
       <Route path="/tables" element={<TablesPage />} />
       
       {/* map */}
-      <Route path="/map" element={<Map />} />
+      <Route path="/map" element={<ProtectedRoute component={Map} />} />
       <Route path="/map/history/:vehicleLicensePlate" element={<MapHistory />} />
 
       {/* vehicle */}
       {/* <PrivateRoute><Vehicles /></PrivateRoute> */}
       <Route path="/vehicles/vehicles_manager" element={<Vehicles />} />
-
+      <Route path="/vehicles/rule_manager" element={<VehicleRules />} />
+    
       {/* Gps Tracker */}
       <Route path="/gps_tracker/tracker_manager" element={<Tracker />} />
       <Route path="/gps_tracker/brand" element={<Brand />} />
@@ -145,6 +151,8 @@ const AppRoutes = () => {
 
       {/* Subscription */}
       <Route path="/subscriptions/subscriptions_manager" element={<Subscriptions />} />
+      <Route path="/subscriptions/plans_manager" element={<SubscriptionPlans />} />
+
 
       {/* Driver */}
       <Route path="/drivers/drivers_manager" element={<Drivers />} />
@@ -156,7 +164,7 @@ const AppRoutes = () => {
       <Route path="/users/user_manager" element={<UserManager />} />
 
       {/* menu Manager */}
-      <Route path="/menu/menu_manager" element={<Menu />} />
+      <Route path="/menu/menu_manager" element={<ProtectedRoute component={Menu} />} />
 
       {/* profiles Manager */}
       <Route path="/profiles/profile_manager" element={<Profils />} />
@@ -164,6 +172,11 @@ const AppRoutes = () => {
       {/* Organization Manager */}
       <Route path="/organization" element={<OrganizationPage />} />
       <Route path="/organization/organization_manager" element={<Organization />} />
+      {/* <Route path="/organization/orgChart" element={<OrgChartOrganization />} /> */}
+
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+
     </Routes>
 
   );

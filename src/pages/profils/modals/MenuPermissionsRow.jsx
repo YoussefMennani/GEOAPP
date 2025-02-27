@@ -124,38 +124,38 @@ const MenuPermissionsRow = ({ data }) => {
 
 
     // ---------------------------------------------- add MENU ----------------------------------------------
-    const onClickValidateAddMenu = (id) => {
-        console.log(menuList, menuState)
-        if (menuState.link != null && menuState.text != null) {
+    // const onClickValidateAddMenu = (id) => {
+    //     console.log(menuList, menuState)
+    //     if (menuState.link != null && menuState.text != null) {
 
-            const updatedMenu = menuList.data.map((item) => {
-                return { header: item.header, items: updateItem(item.items, id) }
-            })
+    //         const updatedMenu = menuList.data.map((item) => {
+    //             return { header: item.header, items: updateItem(item.items, id) }
+    //         })
 
-            console.log(updatedMenu);
-            dispatch(saveMenuSlice(
-                {
-                    menuName: menuList.menuName,
-                    data: updatedMenu
-                }))
-            setMenuState((prev) => ({ ...prev, link: "", text: "" }))
-        } else {
-            let errors = { text: "", link: "" };
+    //         console.log(updatedMenu);
+    //         dispatch(saveMenuSlice(
+    //             {
+    //                 menuName: menuList.menuName,
+    //                 data: updatedMenu
+    //             }))
+    //         setMenuState((prev) => ({ ...prev, link: "", text: "" }))
+    //     } else {
+    //         let errors = { text: "", link: "" };
 
-            if (!menuState.text || menuState.text.trim() === "") {
-                errors.text = "text is required.";
-            }
+    //         if (!menuState.text || menuState.text.trim() === "") {
+    //             errors.text = "text is required.";
+    //         }
 
-            if (!menuState.link || menuState.link.trim() === "") {
-                errors.link = "link is required.";
-            }
+    //         if (!menuState.link || menuState.link.trim() === "") {
+    //             errors.link = "link is required.";
+    //         }
 
-            setErrorsList(errors); // Update errors state
+    //         setErrorsList(errors); // Update errors state
 
 
-            toast.error("fill all the required inputs")
-        }
-    }
+    //         toast.error("fill all the required inputs")
+    //     }
+    // }
 
     const updateItem = (menuList, targetId) => {
         return menuList.map(item => {
@@ -178,16 +178,16 @@ const MenuPermissionsRow = ({ data }) => {
         });
     };
 
-    const handleEditMenu = (id, text, link) => {
-        console.log(id, text, link)
-        console.log(menuList)
-        const updatedMenu = menuList.map((item) => {
-            return { header: item.header, items: updateisEdit(item.items, id) }
-        })
-        console.log(updatedMenu);
-        setMenuState((prev) => ({ ...prev, text: text, link: link }))
-        dispatch(saveMenuSlice(updatedMenu))
-    }
+    // const handleEditMenu = (id, text, link) => {
+    //     console.log(id, text, link)
+    //     console.log(menuList)
+    //     const updatedMenu = menuList.map((item) => {
+    //         return { header: item.header, items: updateisEdit(item.items, id) }
+    //     })
+    //     console.log(updatedMenu);
+    //     setMenuState((prev) => ({ ...prev, text: text, link: link }))
+    //     dispatch(saveMenuSlice(updatedMenu))
+    // }
 
     const updateisEdit = (menuList, targetId) => {
         return menuList.map(item => {
@@ -211,11 +211,18 @@ const MenuPermissionsRow = ({ data }) => {
             const onChangeCheckBox = (id, operation, event) => {
                 const isChecked = event.target.checked; // Get the checkbox state
                 console.log(id, operation, isChecked);
-            
-                const updatedMenu = menuList.data.map((item) => ({
+                const parentTrigerChecker = false;
+                const updatedMenu = menuList.data.map((item) => {
+                    const itemList = onChangeSubCheckBox(item.items, id, operation, isChecked,parentTrigerChecker);
+                    const checkIfAnyItemsTrue =  itemList.some((item)=>item.operation[operation] == true)
+                    return {
                     ...item,
-                    items: onChangeSubCheckBox(item.items, id, operation, isChecked),
-                }));
+                    items: itemList,
+                    operation: {
+                        ...item.operation,
+                        [operation]: checkIfAnyItemsTrue, // Toggle specific permission
+                    }
+                }});
             
                 dispatch(
                     handleExpandMenu({
@@ -225,7 +232,7 @@ const MenuPermissionsRow = ({ data }) => {
                 );
             };
             
-            const onChangeSubCheckBox = (menuList, targetId, operation, isChecked) => {
+            const onChangeSubCheckBox = (menuList, targetId, operation, isChecked,parentTrigerChecker) => {
                 return menuList.map((item) => {
                     const newItem = { ...item }; // Shallow copy for immutability
             
@@ -241,10 +248,22 @@ const MenuPermissionsRow = ({ data }) => {
                             newItem.submenu = changeSubItems(newItem.submenu, operation, isChecked);
                         }
                     }
+                    if(newItem.operation[operation] == true){
+                        console.log("here ",newItem.operation[operation])
+                        parentTrigerChecker=true
+                    }
             
                     if (newItem.submenu) {
                         // Recursively process submenus
                         newItem.submenu = onChangeSubCheckBox(newItem.submenu, targetId, operation, isChecked);
+                        const checkifSubItemAffected =  newItem.submenu.some((item)=>item.operation[operation] == true)
+                        if(checkifSubItemAffected){
+                            newItem.operation = {
+                                ...item.operation,
+                                [operation]: true, // Toggle specific permission
+                            }
+                        }
+                        
                     }
             
                     return newItem;
@@ -268,7 +287,7 @@ const MenuPermissionsRow = ({ data }) => {
                     if (item.submenu && item.submenu.length > 0) {
                         newOne.submenu = changeSubItems(item.submenu, operation, isChecked);
                     }
-            
+                    
                     return newOne;
                 });
             
@@ -277,20 +296,20 @@ const MenuPermissionsRow = ({ data }) => {
             };
             
 
-    const deleteMenu = (id) => {
-        console.log("delete");
-        console.log(menuList);
+    // const deleteMenu = (id) => {
+    //     console.log("delete");
+    //     console.log(menuList);
 
-        const updatedMenu = menuList.data.map((item) => {
-            return { header: item.header, items: deleteSubMenu(item.items, id) };
-        });
+    //     const updatedMenu = menuList.data.map((item) => {
+    //         return { header: item.header, items: deleteSubMenu(item.items, id) };
+    //     });
 
-        console.log(updatedMenu);
-        dispatch(saveMenuSlice({
-            menuName: menuList.menuName,
-            data: updatedMenu
-        }));
-    };
+    //     console.log(updatedMenu);
+    //     dispatch(saveMenuSlice({
+    //         menuName: menuList.menuName,
+    //         data: updatedMenu
+    //     }));
+    // };
 
     const deleteSubMenu = (menuList, targetId) => {
         console.log("deleteSubMenu");

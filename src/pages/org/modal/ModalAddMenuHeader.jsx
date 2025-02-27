@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModalMenu, handleExpandMenu, saveMenuSlice } from "../../../slices/menuSlice";
-import { addOrganizationSlice, closeModalAddOrganizationHeader, saveChnagesOrganization, saveChnagesTargetOrg, saveOrganizationSlice } from "../../../slices/organizationSlice";
+import { addOrganizationSlice, closeModalAddOrganizationHeader, getOrganizationByIdSlice, getOrganizationRootSlice, saveChnagesOrganization, saveChnagesTargetOrg, saveOrganizationSlice } from "../../../slices/organizationSlice";
 
 
 const style = {
@@ -22,7 +22,7 @@ const style = {
   borderRadius: '5px'
 };
 
-const ModalAddMenuHeader = () => {
+const ModalAddMenuHeader = ({idOrg}) => {
 
 
   const dispatch = useDispatch();
@@ -62,23 +62,26 @@ const ModalAddMenuHeader = () => {
 
 
 
-  const addTopMenu = () => {
-    if (headerState.header != "") {
-
+  const addTopMenu = async () => {
+    if (headerState.header !== "") {
       const newMenu = {
-        
         name: headerState.header,
-        parentId:targetEntity.id
+        parentId: targetEntity.id,
+      };
+  
+      try {
+        await dispatch(addOrganizationSlice(newMenu)).unwrap();
+        handleCloseModal();
+
+        idOrg ? dispatch(getOrganizationByIdSlice(idOrg)) : dispatch(getOrganizationRootSlice());
+      } catch (error) {
+        toast.error("Failed to add menu");
       }
-      dispatch(addOrganizationSlice(newMenu))
-
-      
-      handleCloseModal()
-
     } else {
-      toast.error("field required")
+      toast.error("Field required");
     }
-  }
+  };
+  
 
   const handleCloseModal = () => {
     dispatch(closeModalAddOrganizationHeader())

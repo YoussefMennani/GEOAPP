@@ -11,6 +11,7 @@ import organizationReducer from '../slices/organizationSlice';
 
 
 import menuReducer from '../slices/menuSlice';
+import subscriptionReducer from '../slices/subscription';
 
 const store = configureStore({
   reducer: {
@@ -23,7 +24,8 @@ const store = configureStore({
     anomalyDetection:anomalyDetection,
     menu:menuReducer,
     profil:profilReducer,
-    organization:organizationReducer
+    organization:organizationReducer,
+    subscription:subscriptionReducer
   },
 });
 

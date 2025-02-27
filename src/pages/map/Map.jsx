@@ -315,70 +315,9 @@ const Map = () => {
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
 
 
   const positionCenter = [33.1463, -6.7676];
-
-  const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
-
-
-  const initialState = {
-    "516702315483683": {
-      imei: "516702315483683",
-      longitude: -5.5505, // Coordinates for Rabat
-      latitude: 34.020882,
-      speed: 60,
-      timestamp: 1731799289888,
-      altitude: 75.5,
-      heading: 90,
-    },
-    "516702315483684": {
-      imei: "516702315483684",
-      longitude: -8.0089, // Coordinates for Marrakech
-      latitude: 31.634166,
-      speed: 45,
-      timestamp: 1731799289999,
-      altitude: 100.0,
-      heading: 180,
-    },
-    "516702315483685": {
-      imei: "516702315483685",
-      longitude: -7.6208, // Coordinates for Casablanca
-      latitude: 33.573110,
-      speed: 50,
-      timestamp: 1731799290000,
-      altitude: 55.0,
-      heading: 270,
-    },
-    "516702315483686": {
-      imei: "516702315483686",
-      longitude: -6.8498, // Coordinates for Fez
-      latitude: 34.033333,
-      speed: 70,
-      timestamp: 1731799290111,
-      altitude: 120.5,
-      heading: 360,
-    },
-    "516702315483687": {
-      imei: "516702315483687",
-      longitude: -5.8180, // Coordinates for Meknes
-      latitude: 33.896911,
-      speed: 40,
-      timestamp: 1731799290222,
-      altitude: 95.0,
-      heading: 45,
-    },
-  };
-
 
 
   const [positionList, setPositionList] = useState([])
@@ -607,7 +546,7 @@ const Map = () => {
 
           Object.keys(vehicleList).length > 0 && Object.values(vehicleList).map((pos) => (
 
-            !pos.disabled && pos.lastPosition && <Marker position={[pos?.lastPosition?.latitude, pos?.lastPosition?.longitude]} icon={MarkerExporter("car")}
+            !pos.disabled && pos.lastPosition && <Marker position={[pos?.lastPosition?.latitude, pos?.lastPosition?.longitude]} icon={MarkerExporter(pos.vehicleType)}
               
               eventHandlers={{
                 click: (event) => {

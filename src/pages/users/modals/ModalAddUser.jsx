@@ -21,7 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import organizations from "../../vehicles/data/org";
 import keycloak from "../../../keycloak/keycloak";
 import { getAllProfiles } from "../../../slices/profilSlice";
-import { getOrganizationRootSlice, getOrganizationSlice } from "../../../slices/organizationSlice";
+import { getChildOrganizationSlice, getOrganizationRootSlice, getOrganizationSlice } from "../../../slices/organizationSlice";
 import { addUserSlice } from "../../../slices/userSlice";
 
 const style = {
@@ -40,7 +40,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
   const dispatch = useDispatch();
   const { isOpenEditModal } = useSelector((state) => state.drivers);
   const { profilesList } = useSelector((state) => state.profil);
-  const { organizationRoot } = useSelector((state) => state.organization);
+  const { organizationRoot, organizationListChild } = useSelector((state) => state.organization);
 
   const [errors, setErrors] = useState({});
   const [langValues, setLangValues] = useState("");
@@ -112,7 +112,9 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
 
   useEffect(() => {
 
-    dispatch(getOrganizationRootSlice());
+    // dispatch(getOrganizationRootSlice());
+    dispatch(getChildOrganizationSlice());
+
     dispatch(getAllProfiles());
 
   }, []);
@@ -197,6 +199,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
 
   // Close modal
   const handleCloseEditModal = () => {
+    dispatch(closeModalEditDriver())
     dispatch(closeModalEditDriver());
   };
 
@@ -500,7 +503,7 @@ const ModalAddUser = ({ setEntityState, entityState, isEdit }) => {
                 <option value="">Select Organization</option>
                 {
 
-                  organizationRoot.map(org => {
+                  organizationListChild.map(org => {
                     return (<option key={org.id} value={org.id}>
                       {org.name}
                     </option>)

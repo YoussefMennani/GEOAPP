@@ -28,7 +28,7 @@ const Sidebar = () => {
                 {
                      profile && profile?.menu?.data?.map((section) => (
                         // menu && menu.map((section) => (
-                        <React.Fragment key={section.header}>
+                            section.operation.read && <React.Fragment key={section.header}>
                             {section.header && (
                                 <li className="menu-header small text-uppercase">
                                     <span className="menu-header-text">{section.header}</span>

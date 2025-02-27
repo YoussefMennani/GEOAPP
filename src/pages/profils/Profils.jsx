@@ -9,7 +9,7 @@ import axios from 'axios';
 import keycloak from '../../keycloak/keycloak';
 import ModalAddProfil from './modals/ModalAddProfile';
 import ModalConfirmProfilDeletion from './modals/ModalConfirmProfilDeletion';
-import { getAllProfiles, getMenuProfilSlice, openModaAddProfillMenu } from '../../slices/profilSlice';
+import { getAllProfiles, getMenuProfilSlice, handleExpandMenu, openModaAddProfillMenu } from '../../slices/profilSlice';
 import ProfileCard from './ProfileCard';
 import { getOrganizationRootSlice } from '../../slices/organizationSlice';
 
@@ -33,7 +33,7 @@ const Drivers = () => {
 
   useEffect(() => {
     if (status === 'idle') {
-      dispatch(getMenuProfilSlice("menu1"));
+      // dispatch(getMenuProfilSlice("menu1"));
       dispatch(getAllProfiles());
       dispatch(getOrganizationRootSlice());
 
@@ -56,21 +56,19 @@ const Drivers = () => {
   }
 
 
-  const onClickUpdateModel = (id, licensePlate, modelVehicle, brandVehicle, year, color, fuelType, status, tracker) => {
-
+  const onClickUpdateModel = (id, name, description, role, menu, organization) => {
+    console.log(id, name, description, role, menu, organization)
     setEntityState({
       id: id,
-      licensePlate: licensePlate,
-      modelVehicle: modelVehicle,
-      brandVehicle: brandVehicle,
-      year: year,
-      color: color,
-      fuelType: fuelType,
-      status: status,
-      tracker: tracker.trackerId
+      name:name, 
+      description:description,
+      role:role,
+      menu:menu, 
+      organization:organization.id
     })
     setIsEdit(true)
-    dispatch(openModalEditDriver())
+    dispatch(openModaAddProfillMenu())
+    dispatch(handleExpandMenu(menu))
 
   };
 
@@ -112,7 +110,7 @@ const Drivers = () => {
       <div style={{ padding: "20px 0px", backgroundColor: "white", borderRadius: "5px", padding: "20px",display:"flex",justifyContent:"flex-start",flexWrap:"wrap" }}>
         {
           profilesList.length > 0 ? (
-            profilesList.map((profileData) => <ProfileCard key={profileData.id} data={profileData} />)
+            profilesList.map((profileData) => <ProfileCard key={profileData.id} data={profileData}  onClickUpdateModel={onClickUpdateModel} />)
           ) : (
             <h3>No data found</h3>
           )
